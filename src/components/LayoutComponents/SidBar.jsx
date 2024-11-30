@@ -37,6 +37,12 @@ const items = [
     link: "/dashboard/videos",
   },
   {
+    key: "articles",
+    label: "Articles",
+    icon: subscription,
+    link: "/dashboard/articles",
+  },
+  {
     key: "profile",
     label: "Settings",
     icon: settings,

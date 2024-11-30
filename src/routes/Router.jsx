@@ -20,6 +20,7 @@ import About from "../page/Settings/About";
 import Login from "../Auth/Login";
 import CategoryManagements from "../page/CreatorManagement/CategoryManagements.jsx";
 import Videos from "../page/Subscription/Videos.jsx";
+import Articles from "../page/Articles/Articles.jsx";
 
 
 export const router = createBrowserRouter([
@@ -44,7 +45,11 @@ export const router = createBrowserRouter([
         element: <CategoryManagements></CategoryManagements>
       },
      
-      
+      {
+        path: "/dashboard/articles",
+        element: <Articles></Articles>
+      },
+     
      
       {
         path: "/dashboard/videos",
