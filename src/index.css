@@ -5,7 +5,9 @@
 
 
 
-
+:root{
+  background-color: rgb(243, 243, 243);
+}
 
 
 
@@ -51,8 +53,8 @@ select option {
 
 /* Active pagination button */
 .ant-pagination-item-active {
-  background-color: #D9000A !important; /* Active background color */
-  border-color: #D9000A !important;    /* Active border color */
+  background-color: #2F799E !important; /* Active background color */
+  border-color: #2F799E !important;    /* Active border color */
 }
 
 /* Active pagination button text */
@@ -78,8 +80,8 @@ select option {
 } */
 
 :where(.css-dev-only-do-not-override-49qm).ant-checkbox-checked .ant-checkbox-inner {
-  background-color: #000000;
-  border-color: #000000;
+  background-color: #2F799E;
+  border-color: #2F799E;
 }
 
 

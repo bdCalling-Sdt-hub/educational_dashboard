@@ -2,16 +2,15 @@ import { createBrowserRouter } from "react-router-dom";
 import DashboardLayout from "../layout/dashboardLayout/DashboardLayout";
 import Dashboard from "../components/Dashboard/Dashboard";
 import UserManagement from "../page/UserManagement/UserManagement";
-import CreatorManagement from "../page/CreatorManagement/CreatorManagement";
 
-import Subscription from "../page/Subscription/Subscription";
+
+
 
 import Profile from "../page/Settings/Profile";
 import TermsCondition from "../page/Settings/TermsCondition";
 import FAQ from "../page/Settings/FAQ";
 import PrivacyPolicy from "../page/Settings/PrivacyPolicy";
-import Categories from "../page/CategoriesManagement/Categories";
-import Subcategory from "../page/CategoriesManagement/Subcategory";
+
 
 import ForgetPass from "../Auth/ForgetPass";
 import Verify from "../Auth/Verify";
@@ -19,6 +18,8 @@ import ResetPass from "../Auth/ResetPass";
 import Notification from "../page/Notification/Notification";
 import About from "../page/Settings/About";
 import Login from "../Auth/Login";
+import CategoryManagements from "../page/CreatorManagement/CategoryManagements.jsx";
+import Videos from "../page/Subscription/Videos.jsx";
 
 
 export const router = createBrowserRouter([
@@ -39,24 +40,15 @@ export const router = createBrowserRouter([
         element: <UserManagement></UserManagement>,
       },
       {
-        path: "/dashboard/CreatorManagement",
-        element: <CreatorManagement></CreatorManagement>,
+        path: "/dashboard/CategoryManagements",
+        element: <CategoryManagements></CategoryManagements>
       },
+     
+      
+     
       {
-        path: "/dashboard/CategoriesManagement/Categories",
-        element: <Categories></Categories>,
-      },
-      {
-        path: "/dashboard/CategoriesManagement/Categories",
-        element: <Categories></Categories>,
-      },
-      {
-        path: "/dashboard/CategoriesManagement/Subcategory",
-        element: <Subcategory></Subcategory>,
-      },
-      {
-        path: "/dashboard/Subscription",
-        element: <Subscription></Subscription>,
+        path: "/dashboard/videos",
+        element: <Videos></Videos>
       },
       {
         path: "/dashboard/Settings/profile",

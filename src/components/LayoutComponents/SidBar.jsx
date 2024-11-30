@@ -4,7 +4,7 @@ import create from "../../assets/routerImg/create.png";
 import settings from "../../assets/routerImg/settings.png";
 import subscription from "../../assets/routerImg/subscription.png";
 import user from "../../assets/routerImg/user.png";
-import logo from "../../assets/header/logo.png";
+import login from "../../assets/auth/login.png";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { FaChevronRight } from "react-icons/fa"; 
@@ -13,7 +13,7 @@ import { IoIosLogIn } from "react-icons/io";
 const items = [
   {
     key: "dashboard",
-    label: "education",
+    label: "Dashboard",
     icon: dashboard,
     link: "/",
   },
@@ -24,34 +24,17 @@ const items = [
     link: "/dashboard/UserManagement",
   },
   {
-    key: "creatorManagement",
-    label: "Creator Management",
+    key: "CategoryManagements",
+    label: "Category Management",
     icon: create,
-    link: "/dashboard/CreatorManagement",
+    link: "/dashboard/CategoryManagements",
   },
+  
   {
-    key: "categoriesManagement",
-    label: "Categories Management",
-    icon: categorie,
-    link: "/dashboard/CategoriesManagement/Categories",
-    children: [
-      {
-        key: "categoriesManagement",
-        label: "Categories",
-        link: "/dashboard/CategoriesManagement/Categories",
-      },
-      {
-        key: "subcategory",
-        label: "Subcategory",
-        link: "/dashboard/CategoriesManagement/Subcategory",
-      },
-    ],
-  },
-  {
-    key: "subscription",
-    label: "Subscription",
+    key: "videos",
+    label: "videos",
     icon: subscription,
-    link: "/dashboard/Subscription",
+    link: "/dashboard/videos",
   },
   {
     key: "profile",
@@ -133,22 +116,23 @@ const SidBar = () => {
   };
 
   return (
-    <div className="custom-sidebar h-full bg-[#050505]">
+    <div className="custom-sidebar h-full bg-[#2F799E]">
       {/* Logo */}
-      <div className="custom-sidebar-logo flex justify-center">
-        <img src={logo} alt="Logo" className="w-[160px]" />
+      <div className="custom-sidebar-logo flex justify-center py-3">
+        <img src={login} alt="Logo" className="w-[90px]" />
       </div>
 
       {/* Sidebar Menu */}
       <div className="menu-items">
         {items.map((item) => (
           <div key={item.key}>
+            
             <Link
               to={item.link}
               className={`menu-item my-4 mx-5 py-3 px-3 flex items-center cursor-pointer ${
                 selectedKey === item.key
-                  ? "bg-[#EDC4C5] rounded-md"
-                  : "bg-white rounded-md hover:bg-gray-200"
+                  ? "bg-[#6EC5E9] text-white rounded border-l-4 border-black "
+                  : "bg-white rounded hover:bg-gray-200"
               }`}
               onClick={(e) => {
                 if (item.children) {
@@ -159,8 +143,9 @@ const SidBar = () => {
                 }
               }}
             >
+              <div></div>
               <img src={item.icon} alt={item.label} className="w-5 h-5 mr-3" />
-              <span className="block w-full text-black">{item.label}</span>
+              <span className="block w-full ">{item.label}</span>
 
               {/* Show dropdown arrow if children exist */}
               {item.children && (
@@ -174,14 +159,14 @@ const SidBar = () => {
 
             {/* Show children menu if expanded */}
             {item.children && expandedKeys.includes(item.key) && (
-              <div className="overflow-hidden bg-white -my-2 mx-5 mb-4 text-black transition-all duration-300">
+              <div className="overflow-hidden bg-white -my-2 mx-5 mb-4  transition-all duration-300">
                 {item.children.map((child) => (
                   <Link
                     key={child.key}
                     to={child.link}
                     className={`menu-item p-4 flex items-center cursor-pointer ${
                       selectedKey === child.key
-                        ? "bg-[#EDC4C5]"
+                        ? "bg-[#6EC5E9] text-white"
                         : "hover:bg-gray-200"
                     }`}
                     onClick={() => {
@@ -189,7 +174,7 @@ const SidBar = () => {
                       setExpandedKeys([]); // Close all expanded items
                     }}
                   >
-                    <span className="block w-full text-black">{child.label}</span>
+                    <span className="block w-full ">{child.label}</span>
                   </Link>
                 ))}
               </div>
