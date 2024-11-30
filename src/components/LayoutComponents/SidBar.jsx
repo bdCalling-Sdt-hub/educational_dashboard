@@ -13,7 +13,7 @@ import { IoIosLogIn } from "react-icons/io";
 const items = [
   {
     key: "dashboard",
-    label: "Dashboard",
+    label: "education",
     icon: dashboard,
     link: "/",
   },
