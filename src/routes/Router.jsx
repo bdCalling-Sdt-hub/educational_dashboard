@@ -16,11 +16,15 @@ import ForgetPass from "../Auth/ForgetPass";
 import Verify from "../Auth/Verify";
 import ResetPass from "../Auth/ResetPass";
 import Notification from "../page/Notification/Notification";
-import About from "../page/Settings/About";
+
 import Login from "../Auth/Login";
 import CategoryManagements from "../page/CreatorManagement/CategoryManagements.jsx";
 import Videos from "../page/Subscription/Videos.jsx";
 import Articles from "../page/Articles/Articles.jsx";
+import VideDetailsPage from "../page/Subscription/VideDetailsPage.jsx";
+import ArticleDetailsPage from "../page/Articles/ArticleDetailsPage.jsx";
+import ContusctUs from "../page/Settings/ContusctUs.jsx";
+import FeedBack from "../page/Settings/FeedBack.jsx";
 
 
 export const router = createBrowserRouter([
@@ -49,11 +53,18 @@ export const router = createBrowserRouter([
         path: "/dashboard/articles",
         element: <Articles></Articles>
       },
-     
+      {
+        path: "/dashboard/articles/articlesDetails",
+        element: <ArticleDetailsPage></ArticleDetailsPage>
+      },
      
       {
         path: "/dashboard/videos",
         element: <Videos></Videos>
+      },
+      {
+        path: "/dashboard/videos/videodetails",
+        element: <VideDetailsPage></VideDetailsPage>
       },
       {
         path: "/dashboard/Settings/profile",
@@ -76,8 +87,12 @@ export const router = createBrowserRouter([
         element: <FAQ></FAQ>,
       },
       {
-        path: "/dashboard/Settings/aboutUs",
-        element: <About></About>,
+        path: "/dashboard/Settings/contact",
+        element:<ContusctUs></ContusctUs>
+      },
+      {
+        path: "/dashboard/Settings/feedback",
+        element: <FeedBack></FeedBack>
       },
       {
         path: "/dashboard/Settings/PrivacyPolicy",

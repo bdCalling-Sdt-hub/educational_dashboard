@@ -54,7 +54,7 @@ const TermsCondition = () => {
       <div className="mt-5 flex justify-center">
         <button
        
-          className="bg-[#02111E] py-2 px-4 rounded text-white"
+          className="bg-[#2F799E] py-2 px-4 rounded text-white"
         >
           Save & change
         </button>

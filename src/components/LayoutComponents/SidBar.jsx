@@ -69,10 +69,16 @@ const items = [
         link: "/dashboard/Settings/FAQ",
       },
       {
-        key: "about",
-        label: "About Us",
-        link: "/dashboard/Settings/aboutUs",
+        key: "contact",
+        label: "Contact",
+        link: "/dashboard/Settings/contact",
       },
+      {
+        key: "feedback",
+        label: "Feedback",
+        link: "/dashboard/Settings/feedback",
+      },
+     
     ],
   },
 ];
@@ -193,7 +199,7 @@ const SidBar = () => {
       <div className="custom-sidebar-footer absolute bottom-0 w-full p-4">
         <button
           onClick={handleLogout}
-          className="w-full flex bg-white text-start rounded-md text-black p-3"
+          className="w-full flex bg-white text-start rounded text-black p-3"
         >
           <span className="text-2xl">
             <IoIosLogIn />

@@ -172,7 +172,7 @@ const Header = () => {
                       className={`menu-item my-4 mx-5 py-3 px-3 flex items-center cursor-pointer ${
                         selectedKey === item.key
                           ? "bg-[#EDC4C5] rounded-md"
-                          : "bg-white rounded-md hover:bg-gray-200"
+                          : "bg-white rounded hover:bg-gray-200"
                       }`}
                       onClick={() => {
                         if (item.children) {
@@ -230,7 +230,7 @@ const Header = () => {
                 
                 <button
           onClick={handleLogout} 
-          className="w-full flex bg-white text-start rounded-md text-black p-3"
+          className="w-full flex bg-white text-start rounded text-black p-3"
         >
           <span className="text-2xl"><IoIosLogIn /></span>
           <span className="ml-3">Log Out</span>

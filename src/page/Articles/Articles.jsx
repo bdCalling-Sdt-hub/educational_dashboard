@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import img from "../../assets/userdashboard/img.png";
 import { FaArrowLeft } from "react-icons/fa";
 import { Modal } from "antd";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import UseCategory from "../../hook/UseCategory";
 import { MdOutlineModeEdit } from "react-icons/md";
-import { RiDeleteBin6Line } from "react-icons/ri";
+import { RiDeleteBin6Line, RiGalleryFill } from "react-icons/ri";
 const videos = [
   {
     id: 1,
@@ -67,10 +67,10 @@ const videos = [
 ];
 
 const Articles = () => {
-
-    const [openAddModal, setOpenAddModal] = useState(false);
+  const [openAddModal, setOpenAddModal] = useState(false);
   const [editModal, setEditModal] = useState({ isOpen: false, id: null });
   const navigate = useNavigate();
+  const [image, setImage] = useState(null);
 
   const [newCategory, setNewCategory] = useState("");
   const [editedCategory, setEditedCategory] = useState("");
@@ -205,8 +205,18 @@ const Articles = () => {
     // });
   };
 
-    return (
-        <div className="mb-7 mt-4">
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImage(reader.result); // Set the image URL in state
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  return (
+    <div className="mb-7 mt-4">
       <div className="flex justify-between mb-7 mt-4">
         <h1 className="flex gap-4">
           <button
@@ -231,46 +241,43 @@ const Articles = () => {
             key={video.id}
             className="bg-white shadow-md rounded-t-3xl overflow-hidden"
           >
-            <div className="relative">
-              <img
-                src={video.thumbnail}
-                alt={video.title}
-                className="w-full h-90 object-cover"
-              />
-              
-            </div>
+            <Link to={"/dashboard/articles/articlesDetails"}>
+              <div className="relative">
+                <img
+                  src={video.thumbnail}
+                  alt={video.title}
+                  className="w-full h-90 object-cover"
+                />
+              </div>
+            </Link>
             <div className="p-4 bg-[#2F799E] text-white">
               <h2 className="text-lg font-bold truncate">{video.title}</h2>
               <p className="text-sm text-gray-200 truncate">
                 {video.description}
               </p>
-              
-              <div className="flex justify-between gap-2 ">
-              <div className=" text-sm text-gray-200 mt-3">
-                <span>{video.views}</span>
-                <span>{video.time}</span>
-              </div>
-                <div>
-                <button className="text-blue-600 hover:underline">
-                <div
-                    onClick={() =>
-                      setEditModal({ isOpen: true,  })
-                    }
-                    className="w-[36px] h-[36px] text-lg  flex justify-center items-center text-white  cursor-pointer"
-                  >
-                    <MdOutlineModeEdit />
-                  </div>
 
-                  
-                </button>
-                <button className=" ">
-                <div
-                    onClick={() => hndleDelet(item._id)}
-                    className="w-[36px] h-[36px] text-lg  flex justify-center items-center text-white cursor-pointer"
-                  >
-                    <RiDeleteBin6Line />
-                  </div>
-                </button>
+              <div className="flex justify-between gap-2 ">
+                <div className=" text-sm text-gray-200 mt-3">
+                  <span>{video.views}</span>
+                  <span>{video.time}</span>
+                </div>
+                <div>
+                  <button className="text-blue-600 hover:underline">
+                    <div
+                      onClick={() => setEditModal({ isOpen: true })}
+                      className="w-[36px] h-[36px] text-lg  flex justify-center items-center text-white  cursor-pointer"
+                    >
+                      <MdOutlineModeEdit />
+                    </div>
+                  </button>
+                  <button className=" ">
+                    <div
+                      onClick={() => hndleDelet(item._id)}
+                      className="w-[36px] h-[36px] text-lg  flex justify-center items-center text-white cursor-pointer"
+                    >
+                      <RiDeleteBin6Line />
+                    </div>
+                  </button>
                 </div>
               </div>
             </div>
@@ -281,7 +288,7 @@ const Articles = () => {
       <Modal
         centered
         open={openAddModal}
-        onCancel={() => setOpenAddModal(false)}
+        onCancel={() => {setOpenAddModal(false) }}
         footer={null}
         width={600}
       >
@@ -289,27 +296,90 @@ const Articles = () => {
           <div className="">
             <div className="font-bold text-center mb-11">+ Add Category</div>
             <div>
-              <div className="mx-20">
-                <p className="mb-2">Category</p>
-                <input
-                  className="border w-full border-neutral-400 rounded p-2 px-4 bg-[#00000000]"
-                  type="text"
-                  placeholder="Enter category name"
-                  value={newCategory}
-                  onChange={(e) => setNewCategory(e.target.value)}
-                />
+              <div className="mx-5">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="mb-2">Category Name</p>
+                    <input
+                      className="border w-full border-neutral-400 rounded p-2 px-4 bg-[#00000000]"
+                      type="text"
+                      placeholder="Enter category name"
+                     
+                      onChange={(e) => setNewCategory(e.target.value)}
+                    />
+                  </div>
+
+                  <div>
+                    <p className="mb-2">Category Name</p>
+                    <input
+                      className="border w-full border-neutral-400 rounded p-2 px-4 bg-[#00000000]"
+                      type="text"
+                      placeholder="Enter category name"
+                     
+                      onChange={(e) => setNewCategory(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="mt-3">
+                  <p className="mb-2">Category Name</p>
+                  <textarea
+                    className="border w-full border-neutral-400 rounded p-2 px-4 bg-[#00000000]"
+                    type="text"
+                    placeholder="Enter category name"
+                  
+                    onChange={(e) => setNewCategory(e.target.value)}
+                  />
+                </div>
+
+                <div className="">
+                  <div>
+                    <p className="mt-4 mb-2">Thumbs Image</p>
+
+                    <div className="border px-5 py-4 rounded">
+                      <p className="text-gray-600 text-center pb-3">
+                        Suggested dimension [344×184]
+                      </p>
+                      <div className="border-2 border-dashed border-neutral-400 rounded h-[124px] flex flex-col items-center justify-center relative">
+                        {image ? (
+                          <img
+                            src={image}
+                            alt="Uploaded"
+                            className="object-contain w-full h-full"
+                          />
+                        ) : (
+                          <>
+                            <p className="text-gray-600">
+                              Drop image file here to upload
+                            </p>
+                            <p className="text-gray-600">(or click)</p>
+                            <p className="text-4xl text-gray-600 mt-5">
+                              <RiGalleryFill />
+                            </p>
+                          </>
+                        )}
+                        {/* Hidden input for file upload */}
+                        <input
+                          type="file"
+                          className="absolute inset-0 opacity-0 cursor-pointer"
+                          onChange={handleImageChange}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="w-full flex gap-3 mt-11">
-                  <button
-                    onClick={() => setOpenAddModal(false)}
-                    className="bg-[#D9000A] w-full rounded py-2 px-4 text-white"
-                  >
-                    Cancel
-                  </button>
                   <button
                     onClick={handleAddCategory}
                     className="bg-[#2F799E] w-full py-2 px-4 rounded text-white"
                   >
                     Save
+                  </button>
+                  <button
+                    onClick={() => setOpenAddModal(false)}
+                    className="bg-[#D9000A] w-full rounded py-2 px-4 text-white"
+                  >
+                    Cancel
                   </button>
                 </div>
               </div>
@@ -327,33 +397,92 @@ const Articles = () => {
       >
         <div className="mb-20 mt-4">
           <div className="">
-            <div className="font-bold text-center mb-11">Edit Category</div>
+            <div className="font-bold text-center mb-11">+ Edit Category</div>
             <div>
-              <div className="mx-20">
-                <p className="mb-2">Category</p>
-                <input
-                  className="border w-full border-neutral-400 rounded p-2 px-4 bg-[#00000000]"
-                  type="text"
-                  placeholder="Edit category name"
-                  value={
-                    editedCategory ||
-                    category.find((item) => item._id === editModal.id)?.title ||
-                    ""
-                  }
-                  onChange={(e) => setEditedCategory(e.target.value)}
-                />
+              <div className="mx-5">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="mb-2">Category Name</p>
+                    <input
+                      className="border w-full border-neutral-400 rounded p-2 px-4 bg-[#00000000]"
+                      type="text"
+                      placeholder="Enter category name"
+                      
+                      onChange={(e) => setNewCategory(e.target.value)}
+                    />
+                  </div>
+
+                  <div>
+                    <p className="mb-2">Category Name</p>
+                    <input
+                      className="border w-full border-neutral-400 rounded p-2 px-4 bg-[#00000000]"
+                      type="text"
+                      placeholder="Enter category name"
+                     
+                      onChange={(e) => setNewCategory(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="mt-3">
+                  <p className="mb-2">Category Name</p>
+                  <textarea
+                    className="border w-full border-neutral-400 rounded p-2 px-4 bg-[#00000000]"
+                    type="text"
+                    placeholder="Enter category name"
+                 
+                    onChange={(e) => setNewCategory(e.target.value)}
+                  />
+                </div>
+
+                <div className="">
+                  <div>
+                    <p className="mt-4 mb-2">Thumbs Image</p>
+
+                    <div className="border px-5 py-4 rounded">
+                      <p className="text-gray-600 text-center pb-3">
+                        Suggested dimension [344×184]
+                      </p>
+                      <div className="border-2 border-dashed border-neutral-400 rounded h-[124px] flex flex-col items-center justify-center relative">
+                        {image ? (
+                          <img
+                            src={image}
+                            alt="Uploaded"
+                            className="object-contain w-full h-full"
+                          />
+                        ) : (
+                          <>
+                            <p className="text-gray-600">
+                              Drop image file here to upload
+                            </p>
+                            <p className="text-gray-600">(or click)</p>
+                            <p className="text-4xl text-gray-600 mt-5">
+                              <RiGalleryFill />
+                            </p>
+                          </>
+                        )}
+                        {/* Hidden input for file upload */}
+                        <input
+                          type="file"
+                          className="absolute inset-0 opacity-0 cursor-pointer"
+                          onChange={handleImageChange}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="w-full flex gap-3 mt-11">
+                  <button
+                    onClick={handleAddCategory}
+                    className="bg-[#2F799E] w-full py-2 px-4 rounded text-white"
+                  >
+                    Save
+                  </button>
                   <button
                     onClick={() => setEditModal({ isOpen: false, id: null })}
                     className="bg-[#D9000A] w-full rounded py-2 px-4 text-white"
                   >
                     Cancel
-                  </button>
-                  <button
-                    onClick={handleEditCategory}
-                    className="bg-[#004466] w-full py-2 px-4 rounded text-white"
-                  >
-                    Save
                   </button>
                 </div>
               </div>
@@ -362,7 +491,7 @@ const Articles = () => {
         </div>
       </Modal>
     </div>
-    );
+  );
 };
 
 export default Articles;

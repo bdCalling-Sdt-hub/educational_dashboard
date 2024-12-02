@@ -1,4 +1,3 @@
-
 import { Table, Input, Space, Modal } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { MdBlockFlipped } from "react-icons/md";
@@ -8,11 +7,13 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Profile from "../../assets/header/profileLogo.png";
 import Swal from "sweetalert2";
-
 import UseUserManagement from "../../hook/UseUserManagement";
 import UseAxios from "../../hook/UseAxios";
 import AdminUrl from "../../hook/AdminUrl";
 
+
+
+const adminUrl = AdminUrl()
 
 const blockUser = async (id) => {
     try {
@@ -28,84 +29,82 @@ const blockUser = async (id) => {
 
 
 const unblockUser = async (id) => {
-    // try {
-    //     console.log("Unblocking user with ID:", id); 
-    //     const response = await adminUrl.post(`/dashboard/unblock/${id}`);
-    //     console.log("Unblock response:", response.data); 
-    //     return response.data;
-    // } catch (error) {
-    //     console.error("Error unblocking user:", error);
-    //     throw error;
-    // }
+    try {
+        console.log("Unblocking user with ID:", id); 
+        const response = await adminUrl.post(`/dashboard/unblock/${id}`);
+        console.log("Unblock response:", response.data); 
+        return response.data;
+    } catch (error) {
+        console.error("Error unblocking user:", error);
+        throw error;
+    }
 };
 
 const handleBlock = async (record, setBlocked, refetch) => {
-    console.log(record, setBlocked, refetch)
-    // Swal.fire({
-    //     title: "Are you sure?",
-    //     text: "You won't be able to revert this!",
-    //     icon: "warning",
-    //     showCancelButton: true,
-    //     confirmButtonColor: "#3085d6",
-    //     cancelButtonColor: "#d33",
-    //     confirmButtonText: "Yes, Block it!",
-    // }).then(async (result) => {
-    //     if (result.isConfirmed) {
-    //         try {
-    //             console.log("Attempting to block user:", record.key);
-    //             await blockUser(record.key);
-    //             setBlocked((prevState) => ({
-    //                 ...prevState,
-    //                 [record.key]: true,
-    //             }));
-    //             console.log("User blocked successfully:", record.key); 
-    //             Swal.fire({
-    //                 title: "Blocked",
-    //                 text: "The user has been blocked.",
-    //                 icon: "success",
-    //             });
-    //             refetch();
-    //         } catch (error) {
-    //             console.error("Failed to block user:", error); 
-    //             Swal.fire("Error", "Failed to block the user.", "error");
-    //         }
-    //     }
-    // });
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, Block it!",
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                console.log("Attempting to block user:", record.key);
+                await blockUser(record.key);
+                setBlocked((prevState) => ({
+                    ...prevState,
+                    [record.key]: true,
+                }));
+                console.log("User blocked successfully:", record.key); 
+                Swal.fire({
+                    title: "Blocked",
+                    text: "The user has been blocked.",
+                    icon: "success",
+                });
+                refetch();
+            } catch (error) {
+                console.error("Failed to block user:", error); 
+                Swal.fire("Error", "Failed to block the user.", "error");
+            }
+        }
+    });
 };
 
 
 const handleUnblock = async (record, setBlocked, refetch) => {
-    console.log(record, setBlocked, refetch)
-    // Swal.fire({
-    //     title: "Are you sure?",
-    //     text: "You want to unblock this user!",
-    //     icon: "warning",
-    //     showCancelButton: true,
-    //     confirmButtonColor: "#3085d6",
-    //     cancelButtonColor: "#d33",
-    //     confirmButtonText: "Yes, Unblock it!",
-    // }).then(async (result) => {
-    //     if (result.isConfirmed) {
-    //         try {
-    //             console.log("Attempting to unblock user:", record.key); 
-    //             await unblockUser(record.key);
-    //             setBlocked((prevState) => ({
-    //                 ...prevState,
-    //                 [record.key]: false,
-    //             }));
-    //             console.log("User unblocked successfully:", record.key); 
-    //             Swal.fire({
-    //                 title: "Unblocked",
-    //                 text: "The user has been unblocked.",
-    //                 icon: "success",
-    //             });
-    //             refetch();
-    //         } catch (error) {
-    //             console.error("Failed to unblock user:", error); 
-    //             Swal.fire("Error", "Failed to unblock the user.", "error");
-    //         }
-    //     }
-    // });
+    Swal.fire({
+        title: "Are you sure?",
+        text: "You want to unblock this user!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "Yes, Unblock it!",
+    }).then(async (result) => {
+        if (result.isConfirmed) {
+            try {
+                console.log("Attempting to unblock user:", record.key); 
+                await unblockUser(record.key);
+                setBlocked((prevState) => ({
+                    ...prevState,
+                    [record.key]: false,
+                }));
+                console.log("User unblocked successfully:", record.key); 
+                Swal.fire({
+                    title: "Unblocked",
+                    text: "The user has been unblocked.",
+                    icon: "success",
+                });
+                refetch();
+            } catch (error) {
+                console.error("Failed to unblock user:", error); 
+                Swal.fire("Error", "Failed to unblock the user.", "error");
+            }
+        }
+    });
 };
 
 
@@ -184,7 +183,6 @@ const columns = (openModal, setBlocked, blocked, refetch) => [
         ),
     },
 ];
-
 
 
 const UserManagement = () => {

@@ -33,22 +33,24 @@ const Notification = () => {
       </h1>
       <div className="mt-11">
         {notifications.map((notification) => (
-          <div
-            key={notification.id}
-            className="flex gap-11 border-b py-6 ml-5"
-          >
-            <div>
-              <img
-                className="w-[50px] h-[50px] rounded-full"
-                src={notification.img}
-                alt={notification.title}
-              />
-            </div>
-            <div className="flex items-center">
+          <div className="border-b py-6 ml-5 flex justify-between" key={notification.id}>
+            <div className="flex gap-11 ">
               <div>
-                <h3>{notification.title}</h3>
-                <p className="text-[#595959]">{notification.time}</p>
+                <img
+                  className="w-[50px] h-[50px] rounded-full"
+                  src={notification.img}
+                  alt={notification.title}
+                />
               </div>
+              <div className="flex items-center">
+                <div>
+                  <h3>{notification.title}</h3>
+                  <p className="text-[#595959]">{notification.time}</p>
+                </div>
+              </div>
+            </div>
+            <div>
+              <h1>{notification.time}</h1>
             </div>
           </div>
         ))}

@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import img from "../../assets/userdashboard/img.png";
 import { FaArrowLeft } from "react-icons/fa";
 import { Modal } from "antd";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import UseCategory from "../../hook/UseCategory";
 import { MdOutlineModeEdit } from "react-icons/md";
-import { RiDeleteBin6Line } from "react-icons/ri";
+import { RiDeleteBin6Line, RiGalleryFill } from "react-icons/ri";
 const videos = [
   {
     id: 1,
@@ -73,145 +73,56 @@ const Videos = () => {
 
   const [newCategory, setNewCategory] = useState("");
   const [editedCategory, setEditedCategory] = useState("");
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
+  const [videoPreview, setVideoPreview] = useState(null);
 
+  const [image, setImage] = useState(null);
+
+  const handleVideoUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // Create video preview
+    const videoURL = URL.createObjectURL(file);
+    setVideoPreview(videoURL);
+
+    setIsUploading(true);
+    setUploadProgress(0);
+
+    // Simulating upload progress
+    const interval = setInterval(() => {
+      setUploadProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setIsUploading(false);
+          return 100;
+        }
+        return prev + 10; // Increase progress by 10%
+      });
+    }, 500); // Update progress every 500ms
+  };
+
+  const handleImageChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImage(reader.result); // Set the image URL in state
+      };
+      reader.readAsDataURL(file);
+    }
+  };
   // const axiosUrl = UseAxios();
 
   const [category, isLoading, refetch] = UseCategory();
   console.log(category);
-  const handleAddCategory = async () => {
-    console.log("New Category Added:", newCategory);
-
-    // try {
-    //   const response = await axiosUrl.post("/category/create", {
-    //     title: newCategory,
-    //   });
-    //   console.log(response);
-
-    //   if (response.status === 201) {
-    //     Swal.fire({
-    //       title: "Success",
-    //       text: response.data.message,
-    //       icon: "success",
-    //       confirmButtonText: "OK",
-    //     });
-    //     refetch();
-    //   } else {
-    //     Swal.fire({
-    //       title: "Error",
-    //       text: "Failed to add the category. Please try again.",
-    //       icon: "error",
-    //       confirmButtonText: "OK",
-    //     });
-    //   }
-    // } catch (error) {
-    //   console.error("Error adding category:", error);
-    //   Swal.fire({
-    //     title: "Error",
-    //     text: "Something went wrong! Please try again later.",
-    //     icon: "error",
-    //     confirmButtonText: "OK",
-    //   });
-    // }
-
-    setOpenAddModal(false);
-    setNewCategory("");
-  };
-
-  const handleEditCategory = async () => {
-    console.log("Category Edited:", editedCategory);
-
-    // if (!editedCategory) {
-    //   Swal.fire({
-    //     title: "Error",
-    //     text: "Category name cannot be empty.",
-    //     icon: "error",
-    //     confirmButtonText: "OK",
-    //   });
-    //   return;
-    // }
-
-    // try {
-    //   const response = await axiosUrl.put(`/category/update/${editModal.id}`, {
-    //     title: editedCategory,
-    //   });
-
-    //   if (response.status === 200) {
-    //     Swal.fire({
-    //       title: "Success",
-    //       text: response.data.message || "Category updated successfully!",
-    //       icon: "success",
-    //       confirmButtonText: "OK",
-    //     });
-    //     refetch();
-    //   } else {
-    //     Swal.fire({
-    //       title: "Error",
-    //       text: "Failed to update the category. Please try again.",
-    //       icon: "error",
-    //       confirmButtonText: "OK",
-    //     });
-    //   }
-    // } catch (error) {
-    //   console.error("Error updating category:", error);
-    //   Swal.fire({
-    //     title: "Error",
-    //     text: "Something went wrong! Please try again later.",
-    //     icon: "error",
-    //     confirmButtonText: "OK",
-    //   });
-    // }
-
-    setEditModal({ isOpen: false, id: null });
-    setEditedCategory("");
-  };
-
-  const hndleDelet = async (id) => {
-    // Swal.fire({
-    //   title: "Are you sure?",
-    //   text: "You won't be able to revert this!",
-    //   icon: "warning",
-    //   showCancelButton: true,
-    //   confirmButtonColor: "#3085d6",
-    //   cancelButtonColor: "#d33",
-    //   confirmButtonText: "Yes, Delete it!",
-    // }).then(async (result) => {
-    //   if (result.isConfirmed) {
-    //     try {
-    //       const response = await axiosUrl.delete(`/category/delete/${id}`);
-    //       if (response.status === 200) {
-    //         Swal.fire({
-    //           title: "Deleted!",
-    //           text: response.data.message || "Category has been deleted.",
-    //           icon: "success",
-    //         });
-    //         refetch();
-    //       } else {
-    //         Swal.fire({
-    //           title: "Error",
-    //           text: "Failed to delete the category. Please try again.",
-    //           icon: "error",
-    //         });
-    //       }
-    //     } catch (error) {
-    //       console.error("Error deleting category:", error);
-    //       Swal.fire({
-    //         title: "Error",
-    //         text: "Something went wrong! Please try again later.",
-    //         icon: "error",
-    //       });
-    //     }
-    //   }
-    // });
-  };
 
   return (
     <div className="mb-7 mt-4">
       <div className="flex justify-between mb-7 mt-4">
         <h1 className="flex gap-4">
-          <button
-            className="text-[#EF4849] "
-            onClick={() => navigate(-1)}
-          >
+          <button className="text-[#EF4849] -mt-3" onClick={() => navigate(-1)}>
             <FaArrowLeft />
           </button>
           <span className="text-lg font-semibold">User Management</span>
@@ -230,61 +141,59 @@ const Videos = () => {
             key={video.id}
             className="bg-white shadow-md rounded-t-3xl overflow-hidden"
           >
-            <div className="relative">
-              <img
-                src={video.thumbnail}
-                alt={video.title}
-                className="w-full h-90 object-cover"
-              />
-              <button className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-3 rounded-full shadow-md">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth={2}
-                  stroke="currentColor"
-                  className="w-6 h-6 text-blue-600"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M14.752 11.168l-5.197-3.482a1 1 0 00-1.555.832v6.964a1 1 0 001.555.832l5.197-3.482a1 1 0 000-1.664z"
-                  />
-                </svg>
-              </button>
-            </div>
+            <Link to={"/dashboard/videos/videodetails"}>
+              <div className="relative">
+                <img
+                  src={video.thumbnail}
+                  alt={video.title}
+                  className="w-full h-90 object-cover"
+                />
+                <button className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-3 rounded-full shadow-md">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth={2}
+                    stroke="currentColor"
+                    className="w-6 h-6 text-black"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M14.752 11.168l-5.197-3.482a1 1 0 00-1.555.832v6.964a1 1 0 001.555.832l5.197-3.482a1 1 0 000-1.664z"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </Link>
             <div className="p-4 bg-[#2F799E] text-white">
               <h2 className="text-lg font-bold truncate">{video.title}</h2>
               <p className="text-sm text-gray-200 truncate">
                 {video.description}
               </p>
-              
-              <div className="flex justify-between gap-2 ">
-              <div className=" text-sm text-gray-200 mt-3">
-                <span>{video.views}</span>
-                <span>{video.time}</span>
-              </div>
-                <div>
-                <button className="text-blue-600 hover:underline">
-                <div
-                    onClick={() =>
-                      setEditModal({ isOpen: true,  })
-                    }
-                    className="w-[36px] h-[36px] text-lg  flex justify-center items-center text-white  cursor-pointer"
-                  >
-                    <MdOutlineModeEdit />
-                  </div>
 
-                  
-                </button>
-                <button className=" ">
-                <div
-                    onClick={() => hndleDelet(item._id)}
-                    className="w-[36px] h-[36px] text-lg  flex justify-center items-center text-white cursor-pointer"
-                  >
-                    <RiDeleteBin6Line />
-                  </div>
-                </button>
+              <div className="flex justify-between gap-2 ">
+                <div className=" text-sm text-gray-200 mt-3">
+                  <span>{video.views}</span>
+                  <span>{video.time}</span>
+                </div>
+                <div>
+                  <button className="text-blue-600 hover:underline">
+                    <div
+                      onClick={() => setEditModal({ isOpen: true })}
+                      className="w-[36px] h-[36px] text-lg  flex justify-center items-center text-white  cursor-pointer"
+                    >
+                      <MdOutlineModeEdit />
+                    </div>
+                  </button>
+                  <button className=" ">
+                    <div
+                      onClick={() => hndleDelet(item._id)}
+                      className="w-[36px] h-[36px] text-lg  flex justify-center items-center text-white cursor-pointer"
+                    >
+                      <RiDeleteBin6Line />
+                    </div>
+                  </button>
                 </div>
               </div>
             </div>
@@ -295,7 +204,14 @@ const Videos = () => {
       <Modal
         centered
         open={openAddModal}
-        onCancel={() => setOpenAddModal(false)}
+        onCancel={() => {setOpenAddModal(false)
+
+
+
+        } }
+
+        
+
         footer={null}
         width={600}
       >
@@ -303,27 +219,131 @@ const Videos = () => {
           <div className="">
             <div className="font-bold text-center mb-11">+ Add Category</div>
             <div>
-              <div className="mx-20">
-                <p className="mb-2">Category</p>
-                <input
-                  className="border w-full border-neutral-400 rounded p-2 px-4 bg-[#00000000]"
-                  type="text"
-                  placeholder="Enter category name"
-                  value={newCategory}
-                  onChange={(e) => setNewCategory(e.target.value)}
-                />
+              <div className="mx-5">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="mb-2">Category Name</p>
+                    <input
+                      className="border w-full border-neutral-400 rounded p-2 px-4 bg-[#00000000]"
+                      type="text"
+                      placeholder="Enter category name"
+                    
+                    />
+                  </div>
+
+                  <div>
+                    <p className="mb-2">Category Name</p>
+                    <input
+                      className="border w-full border-neutral-400 rounded p-2 px-4 bg-[#00000000]"
+                      type="text"
+                      placeholder="Enter category name"
+                    
+                    />
+                  </div>
+                </div>
+                <div className="mt-3">
+                  <p className="mb-2">Category Name</p>
+                  <textarea
+                    className="border w-full border-neutral-400 rounded p-2 px-4 bg-[#00000000]"
+                    type="text"
+                    placeholder="Enter category name"
+                    
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <p className="mt-4 mb-2">Thumbs Image</p>
+
+                    <div className="border px-5 py-4 rounded">
+                      <p className="text-gray-600 text-center pb-3">
+                        Suggested dimension [344×184]
+                      </p>
+                      <div className="border-2 border-dashed border-neutral-400 rounded h-[124px] flex flex-col items-center justify-center relative">
+                        {image ? (
+                          <img
+                            src={image}
+                            alt="Uploaded"
+                            className="object-contain w-full h-full"
+                          />
+                        ) : (
+                          <>
+                            <p className="text-gray-600">
+                              Drop image file here to upload
+                            </p>
+                            <p className="text-gray-600">(or click)</p>
+                            <p className="text-4xl text-gray-600 mt-5">
+                              <RiGalleryFill />
+                            </p>
+                          </>
+                        )}
+                        {/* Hidden input for file upload */}
+                        <input
+                          type="file"
+                          className="absolute inset-0 opacity-0 cursor-pointer"
+                          onChange={handleImageChange}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="">
+                    <p className="mt-4 mb-2">Add Video</p>
+
+                    <div className="border px-5 py-4 rounded">
+                      <p className="text-gray-600 text-center pb-3">
+                        Suggested dimension [344×184]
+                      </p>
+                      <div className="border-2 border-dashed border-neutral-400 rounded h-[76px] flex flex-col items-center justify-center relative overflow-hidden">
+                        {videoPreview ? (
+                          <video
+                            src={videoPreview}
+                            className="absolute inset-0 w-full h-full object-cover"
+                            controls
+                          />
+                        ) : (
+                          <>
+                            <p className="text-gray-600">
+                              Drop video file here to upload
+                            </p>
+                            <p className="text-gray-600">(or click)</p>
+                            <p className="text-4xl text-gray-600">
+                              <RiGalleryFill />
+                            </p>
+                            {/* Hidden input for file upload */}
+                            <input
+                              type="file"
+                              className="absolute inset-0 opacity-0 cursor-pointer"
+                              accept="video/*"
+                              onChange={handleVideoUpload}
+                            />
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    {isUploading && (
+                      <p className="border text-cyan-800 p-2 text-center mt-2 rounded">
+                        Loading... {uploadProgress}%
+                      </p>
+                    )}
+
+                    {!isUploading && uploadProgress === 100 && (
+                      <p className="border text-green-800 p-2 text-center mt-2 rounded">
+                        Upload Complete!
+                      </p>
+                    )}
+                  </div>
+                </div>
+
                 <div className="w-full flex gap-3 mt-11">
+                  <button className="bg-[#2F799E] w-full py-2 px-4 rounded text-white">
+                    Save
+                  </button>
                   <button
                     onClick={() => setOpenAddModal(false)}
                     className="bg-[#D9000A] w-full rounded py-2 px-4 text-white"
                   >
                     Cancel
-                  </button>
-                  <button
-                    onClick={handleAddCategory}
-                    className="bg-[#2F799E] w-full py-2 px-4 rounded text-white"
-                  >
-                    Save
                   </button>
                 </div>
               </div>
@@ -341,33 +361,133 @@ const Videos = () => {
       >
         <div className="mb-20 mt-4">
           <div className="">
-            <div className="font-bold text-center mb-11">Edit Category</div>
+            <div className="font-bold text-center mb-11">+ Edit Category</div>
             <div>
-              <div className="mx-20">
-                <p className="mb-2">Category</p>
-                <input
-                  className="border w-full border-neutral-400 rounded p-2 px-4 bg-[#00000000]"
-                  type="text"
-                  placeholder="Edit category name"
-                  value={
-                    editedCategory ||
-                    category.find((item) => item._id === editModal.id)?.title ||
-                    ""
-                  }
-                  onChange={(e) => setEditedCategory(e.target.value)}
-                />
+              <div className="mx-5">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="mb-2">Category Name</p>
+                    <input
+                      className="border w-full border-neutral-400 rounded p-2 px-4 bg-[#00000000]"
+                      type="text"
+                      placeholder="Enter category name"
+                      
+                    />
+                  </div>
+
+                  <div>
+                    <p className="mb-2">Category Name</p>
+                    <input
+                      className="border w-full border-neutral-400 rounded p-2 px-4 bg-[#00000000]"
+                      type="text"
+                      placeholder="Enter category name"
+                      
+                    />
+                  </div>
+                </div>
+                <div className="mt-3">
+                  <p className="mb-2">Category Name</p>
+                  <textarea
+                    className="border w-full border-neutral-400 rounded p-2 px-4 bg-[#00000000]"
+                    type="text"
+                    placeholder="Enter category name"
+                   
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <p className="mt-4 mb-2">Thumbs Image</p>
+
+                    <div className="border px-5 py-4 rounded">
+                      <p className="text-gray-600 text-center pb-3">
+                        Suggested dimension [344×184]
+                      </p>
+                      <div className="border-2 border-dashed border-neutral-400 rounded h-[124px] flex flex-col items-center justify-center relative">
+                        {image ? (
+                          <img
+                            src={image}
+                            alt="Uploaded"
+                            className="object-contain w-full h-full"
+                          />
+                        ) : (
+                          <>
+                            <p className="text-gray-600">
+                              Drop image file here to upload
+                            </p>
+                            <p className="text-gray-600">(or click)</p>
+                            <p className="text-4xl text-gray-600 mt-5">
+                              <RiGalleryFill />
+                            </p>
+                          </>
+                        )}
+                        {/* Hidden input for file upload */}
+                        <input
+                          type="file"
+                          className="absolute inset-0 opacity-0 cursor-pointer"
+                          onChange={handleImageChange}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="">
+                    <p className="mt-4 mb-2">Add Video</p>
+
+                    <div className="border px-5 py-4 rounded">
+                      <p className="text-gray-600 text-center pb-3">
+                        Suggested dimension [344×184]
+                      </p>
+                      <div className="border-2 border-dashed border-neutral-400 rounded h-[76px] flex flex-col items-center justify-center relative overflow-hidden">
+                        {videoPreview ? (
+                          <video
+                            src={videoPreview}
+                            className="absolute inset-0 w-full h-full object-cover"
+                            controls
+                          />
+                        ) : (
+                          <>
+                            <p className="text-gray-600">
+                              Drop video file here to upload
+                            </p>
+                            <p className="text-gray-600">(or click)</p>
+                            <p className="text-4xl text-gray-600">
+                              <RiGalleryFill />
+                            </p>
+                            {/* Hidden input for file upload */}
+                            <input
+                              type="file"
+                              className="absolute inset-0 opacity-0 cursor-pointer"
+                              accept="video/*"
+                              onChange={handleVideoUpload}
+                            />
+                          </>
+                        )}
+                      </div>
+                    </div>
+
+                    {isUploading && (
+                      <p className="border text-cyan-800 p-2 text-center mt-2 rounded">
+                        Loading... {uploadProgress}%
+                      </p>
+                    )}
+
+                    {!isUploading && uploadProgress === 100 && (
+                      <p className="border text-green-800 p-2 text-center mt-2 rounded">
+                        Upload Complete!
+                      </p>
+                    )}
+                  </div>
+                </div>
+
                 <div className="w-full flex gap-3 mt-11">
+                  <button className="bg-[#2F799E] w-full py-2 px-4 rounded text-white">
+                    Save
+                  </button>
                   <button
                     onClick={() => setEditModal({ isOpen: false, id: null })}
                     className="bg-[#D9000A] w-full rounded py-2 px-4 text-white"
                   >
                     Cancel
-                  </button>
-                  <button
-                    onClick={handleEditCategory}
-                    className="bg-[#004466] w-full py-2 px-4 rounded text-white"
-                  >
-                    Save
                   </button>
                 </div>
               </div>
