@@ -54,6 +54,11 @@ const items = [
         link: "/dashboard/Settings/profile",
       },
       {
+        key: "about",
+        label: "About Us",
+        link: "/dashboard/Settings/aboutUs",
+      },
+      {
         key: "terms",
         label: "Terms & Condition",
         link: "/dashboard/Settings/Terms&Condition",
@@ -77,6 +82,11 @@ const items = [
         key: "feedback",
         label: "Feedback",
         link: "/dashboard/Settings/feedback",
+      },
+      {
+        key: "Partner",
+        label: "Partner Law Firms",
+        link: "/dashboard/Settings/partnerLawFirms",
       },
      
     ],
@@ -141,17 +151,17 @@ const SidBar = () => {
             
             <Link
               to={item.link}
-              className={`menu-item my-4 mx-5 py-3 px-3 flex items-center cursor-pointer ${
+              className={`menu-item my-4 mx-5 py-[9px] px-3 flex items-center cursor-pointer ${
                 selectedKey === item.key
                   ? "bg-[#6EC5E9] text-white rounded border-l-4 border-black "
                   : "bg-white rounded hover:bg-gray-200"
               }`}
               onClick={(e) => {
                 if (item.children) {
-                  e.preventDefault(); // Prevent navigation if it has children
-                  onParentClick(item.key); // Toggle expanded state
+                  e.preventDefault(); 
+                  onParentClick(item.key); 
                 } else {
-                  setSelectedKey(item.key); // Set the selected key for normal links
+                  setSelectedKey(item.key);
                 }
               }}
             >
@@ -159,7 +169,7 @@ const SidBar = () => {
               <img src={item.icon} alt={item.label} className="w-5 h-5 mr-3" />
               <span className="block w-full ">{item.label}</span>
 
-              {/* Show dropdown arrow if children exist */}
+           
               {item.children && (
                 <FaChevronRight
                   className={`ml-auto transform transition-all duration-300 ${
@@ -169,21 +179,21 @@ const SidBar = () => {
               )}
             </Link>
 
-            {/* Show children menu if expanded */}
+            
             {item.children && expandedKeys.includes(item.key) && (
               <div className="overflow-hidden bg-white -my-2 mx-5 mb-4  transition-all duration-300">
                 {item.children.map((child) => (
                   <Link
                     key={child.key}
                     to={child.link}
-                    className={`menu-item p-4 flex items-center cursor-pointer ${
+                    className={`menu-item p-3 flex items-center cursor-pointer ${
                       selectedKey === child.key
                         ? "bg-[#6EC5E9] text-white"
                         : "hover:bg-gray-200"
                     }`}
                     onClick={() => {
-                      setSelectedKey(child.key); // Set the selected key for children
-                      setExpandedKeys([]); // Close all expanded items
+                      setSelectedKey(child.key); 
+                      setExpandedKeys([]); 
                     }}
                   >
                     <span className="block w-full ">{child.label}</span>
@@ -195,7 +205,7 @@ const SidBar = () => {
         ))}
       </div>
 
-      {/* Logout Button */}
+
       <div className="custom-sidebar-footer absolute bottom-0 w-full p-4">
         <button
           onClick={handleLogout}

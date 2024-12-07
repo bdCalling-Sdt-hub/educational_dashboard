@@ -32,34 +32,23 @@ const items = [
     link: "/dashboard/UserManagement",
   },
   {
-    key: "creatorManagement",
-    label: "Creator Management",
+    key: "CategoryManagements",
+    label: "Category Management",
     icon: create,
-    link: "/dashboard/CreatorManagement",
+    link: "/dashboard/CategoryManagements",
   },
+  
   {
-    key: "categoriesManagement",
-    label: "Categories Management",
-    icon: categorie,
-    link: "/dashboard/CategoriesManagement/Categories",
-    children: [
-      {
-        key: "categoriesManagement",
-        label: "Categories",
-        link: "/dashboard/CategoriesManagement/Categories",
-      },
-      {
-        key: "subcategory",
-        label: "Subcategory",
-        link: "/dashboard/CategoriesManagement/Subcategory",
-      },
-    ],
-  },
-  {
-    key: "subscription",
-    label: "Subscription",
+    key: "videos",
+    label: "videos",
     icon: subscription,
-    link: "/dashboard/Subscription",
+    link: "/dashboard/videos",
+  },
+  {
+    key: "articles",
+    label: "Articles",
+    icon: subscription,
+    link: "/dashboard/articles",
   },
   {
     key: "profile",
@@ -71,6 +60,11 @@ const items = [
         key: "profile",
         label: "Profile",
         link: "/dashboard/Settings/profile",
+      },
+      {
+        key: "about",
+        label: "About Us",
+        link: "/dashboard/Settings/aboutUs",
       },
       {
         key: "terms",
@@ -86,6 +80,21 @@ const items = [
         key: "faq",
         label: "FAQ",
         link: "/dashboard/Settings/FAQ",
+      },
+      {
+        key: "contact",
+        label: "Contact",
+        link: "/dashboard/Settings/contact",
+      },
+      {
+        key: "feedback",
+        label: "Feedback",
+        link: "/dashboard/Settings/feedback",
+      },
+      {
+        key: "Partner",
+        label: "Partner Law Firms",
+        link: "/dashboard/Settings/partnerLawFirms",
       },
     ],
   },
@@ -167,20 +176,22 @@ const Header = () => {
                 {items.map((item) => (
                   <div key={item.key}>
                   
-                    <Link
-                      to={item.link}
-                      className={`menu-item my-4 mx-5 py-3 px-3 flex items-center cursor-pointer ${
-                        selectedKey === item.key
-                          ? "bg-[#EDC4C5] rounded-md"
-                          : "bg-white rounded hover:bg-gray-200"
-                      }`}
-                      onClick={() => {
-                        if (item.children) {
-                          onParentClick(item.key); 
-                        }
-                        onClick(item.key); 
-                      }}
-                    >
+                  <Link
+              to={item.link}
+              className={`menu-item my-4 mx-5 py-3 px-3 flex items-center cursor-pointer ${
+                selectedKey === item.key
+                  ? "bg-[#6EC5E9] text-white rounded border-l-4 border-black "
+                  : "bg-white rounded hover:bg-gray-200"
+              }`}
+              onClick={(e) => {
+                if (item.children) {
+                  e.preventDefault(); // Prevent navigation if it has children
+                  onParentClick(item.key); // Toggle expanded state
+                } else {
+                  setSelectedKey(item.key); // Set the selected key for normal links
+                }
+              }}
+            >
                       <img
                         src={item.icon}
                         alt={item.label}
@@ -202,19 +213,19 @@ const Header = () => {
 
                   
                     {item.children && expandedKeys.includes(item.key) && (
-                      <div className="overflow-hidden bg-white -my-2 mx-5 mb-4 text-black transition-all duration-300">
+                      <div className="overflow-hidden bg-white -my-2 mx-5 mb-4  transition-all duration-300">
                         {item.children.map((child) => (
                           <Link
                             key={child.key}
                             to={child.link}
                             className={`menu-item p-4 flex items-center cursor-pointer ${
                               selectedKey === child.key
-                                ? "bg-[#EDC4C5]"
-                                : "hover:bg-gray-200"
+                                ? "bg-[#6EC5E9] text-white"
+                        : "hover:bg-gray-200"
                             }`}
                             onClick={() => onClick(child.key)}
                           >
-                            <span className="block w-full text-black">
+                            <span className="block w-full ">
                               {child.label}
                             </span>
                           </Link>

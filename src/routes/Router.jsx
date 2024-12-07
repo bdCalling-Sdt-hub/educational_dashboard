@@ -25,6 +25,8 @@ import VideDetailsPage from "../page/Subscription/VideDetailsPage.jsx";
 import ArticleDetailsPage from "../page/Articles/ArticleDetailsPage.jsx";
 import ContusctUs from "../page/Settings/ContusctUs.jsx";
 import FeedBack from "../page/Settings/FeedBack.jsx";
+import PartnerLaw from "../page/Settings/PartnerLaw/PartnerLaw.jsx";
+import AboutUs from "../page/Settings/AboutUs.jsx";
 
 
 export const router = createBrowserRouter([
@@ -75,6 +77,10 @@ export const router = createBrowserRouter([
         element: <Profile></Profile>,
       },
       {
+        path: "/dashboard/Settings/aboutUs",
+        element: <AboutUs></AboutUs>
+      },
+      {
         path: "/dashboard/Settings/notification",
         element: <Notification></Notification>,
       },
@@ -97,6 +103,10 @@ export const router = createBrowserRouter([
       {
         path: "/dashboard/Settings/PrivacyPolicy",
         element: <PrivacyPolicy></PrivacyPolicy>,
+      },
+      {
+        path: "/dashboard/Settings/partnerLawFirms",
+        element: <PartnerLaw></PartnerLaw>
       },
     ],
   },
