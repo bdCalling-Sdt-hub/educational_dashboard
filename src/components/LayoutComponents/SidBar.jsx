@@ -6,7 +6,7 @@ import subscription from "../../assets/routerImg/subscription.png";
 import user from "../../assets/routerImg/user.png";
 import login from "../../assets/auth/login.png";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaChevronRight } from "react-icons/fa"; 
 import { IoIosLogIn } from "react-icons/io";
 
@@ -98,6 +98,7 @@ const SidBar = () => {
   const [expandedKeys, setExpandedKeys] = useState([]);
   const location = useLocation();
   const navigate = useNavigate();
+  const contentRef = useRef({});
 
   useEffect(() => {
     const currentPath = location.pathname;
@@ -180,8 +181,18 @@ const SidBar = () => {
             </Link>
 
             
-            {item.children && expandedKeys.includes(item.key) && (
-              <div className="overflow-hidden bg-white -my-2 mx-5 mb-4  transition-all duration-300">
+            {item.children && (
+              <div
+                className={`overflow-hidden bg-white -my-2 mx-5 mb-4  transition-all duration-300 ${
+                  expandedKeys.includes(item.key) ? "expanded" : ""
+                }`}
+                style={{
+                  maxHeight: expandedKeys.includes(item.key)
+                    ? `${contentRef.current[item.key]?.scrollHeight}px`
+                    : "0",
+                }}
+                ref={(el) => (contentRef.current[item.key] = el)}
+              >
                 {item.children.map((child) => (
                   <Link
                     key={child.key}

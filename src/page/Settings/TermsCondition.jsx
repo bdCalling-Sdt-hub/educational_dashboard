@@ -32,9 +32,9 @@ const TermsCondition = () => {
 
   return (
     <div className=" mx-auto ">
-      <div className="flex justify-between mb-7 mt-4">
+      <div className="flex justify-between mb-7 mt-4 text-[#2F799E]">
         <h1 className="flex gap-4">
-          <button className="text-[#EF4849] " onClick={() => navigate(-1)}>
+          <button className="" onClick={() => navigate(-1)}>
             <FaArrowLeft />
           </button>
           <span className="text-lg font-semibold">Terms & Condition</span>

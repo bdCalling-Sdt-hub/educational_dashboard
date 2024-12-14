@@ -87,7 +87,7 @@ const Dashboard = () => {
         <div className="bg-white rounded mt-4">
         <div className="items-center mb-4">
             <h3 className="text-gray-700 font-bold pt-3 pl-7">
-              Income Overview
+              User Growth
             </h3>
             <div className="flex justify-end">
               <select
@@ -127,14 +127,14 @@ const Dashboard = () => {
 
         <div className="col-span-1">
           <div className="bg-white h-[533px] overflow-scroll p-4 rounded shadow ">
-  <h3 className="text-gray-700 font-bold mb-4">Top Podcast</h3>
+  <h3 className="text-gray-700 font-bold mb-4">Top - Video's</h3>
   <div className="overflow-x-auto">
     <table className="min-w-full">
       <thead>
-        <tr>
+        <tr className="text-[#2F799E]">
           <th className="px-4 py-2 text-left">SL no.</th>
-          <th className="px-4 py-2">Event Name</th>
-          <th className="px-4 py-2 text-left">Total</th>
+          <th className="px-4 py-2">Video</th>
+          <th className="px-4 py-2 text-left">View</th>
         </tr>
       </thead>
       <tbody>
@@ -158,16 +158,16 @@ const Dashboard = () => {
 
 
       <div className="bg-white overflow-scroll h-[350px] mt-4 p-4 rounded shadow mb-6">
-  <h3 className="text-gray-700 font-bold mb-4">Top Podcast</h3>
+  <h3 className="text-gray-700 font-bold mb-4">Recent User</h3>
   <div className="overflow-x-auto">
     <table className="min-w-full">
       <thead>
         <tr className="text-[#2F799E]">
           <th className="px-4 py-2 text-left">SL no.</th>
-          <th className="px-4 py-2 text-start">Event Name</th>
-          <th className="px-4 py-2 text-left">Total</th>
-          <th className="px-4 py-2 text-start">Event Name</th>
-          <th className="px-4 py-2 text-left">Total</th>
+          <th className="px-4 py-2 text-start">Name</th>
+          <th className="px-4 py-2 text-left">Date of Birth</th>
+          <th className="px-4 py-2 text-start">Email</th>
+          <th className="px-4 py-2 text-left">Contuct Number</th>
         
           
         </tr>

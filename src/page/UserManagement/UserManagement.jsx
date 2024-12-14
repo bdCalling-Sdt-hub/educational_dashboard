@@ -217,9 +217,9 @@ const UserManagement = () => {
     return (
         <div>
             <div className="flex justify-between mb-7 mt-4">
-                <h1 className="flex gap-4">
+                <h1 className="flex gap-4 text-[#2F799E]">
                     <button
-                        className="text-[#EF4849] -mt-[20px]"
+                        className=" -mt-[20px]"
                         onClick={() => navigate(-1)}
                     >
                         <FaArrowLeft />

@@ -6,11 +6,11 @@ const ArticleDetailsPage = () => {
     const navigate = useNavigate()
   return (
     <div>
-        <h1 className="flex gap-4 mb-7 mt-4">
-        <button className="text-[#EF4849] " onClick={() => navigate(-1)}>
+        <h1 className="flex gap-4 mb-7 mt-4 text-[#2F799E]">
+        <button className="" onClick={() => navigate(-1)}>
           <FaArrowLeft />
         </button>
-        <span className="text-lg font-semibold">Video</span>
+        <span className="text-lg font-semibold">Article</span>
       </h1>
       <div>
         <div className="grid grid-cols-3 gap-4">

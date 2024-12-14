@@ -22,9 +22,9 @@ const FAQ = () => {
   
   return (
     <div>
-      <h1 className="flex gap-4 mb-7 mt-4">
+      <h1 className="flex gap-4 mb-7 mt-4 text-[#2F799E]">
           <button
-            className="text-[#EF4849] "
+            className=" "
             onClick={() => navigate(-1)} 
           >
             <FaArrowLeft />

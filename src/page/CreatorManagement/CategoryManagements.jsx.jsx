@@ -168,8 +168,8 @@ const CategoryManagements = () => {
 
   return (
     <div className="mb-7 mt-4">
-      <h1 className="flex gap-4">
-        <button className="text-[#EF4849] " onClick={() => navigate(-1)}>
+      <h1 className="flex gap-4 text-[#2F799E]">
+        <button className=" " onClick={() => navigate(-1)}>
           <FaArrowLeft />
         </button>
         <span className="text-lg font-semibold">Category Management</span>
@@ -191,8 +191,8 @@ const CategoryManagements = () => {
             <thead>
               <tr>
                 <th className="px-4 py-2 text-left">SL no.</th>
-                <th className="px-4 py-2 text-center">Event Name</th>
-                <th className="px-4 py-2 text-center">Img</th>
+                <th className="px-4 py-2 text-center">Category Name</th>
+                <th className="px-4 py-2 text-center">Image</th>
                 <th className="px-4 py-2 text-end">Actions</th>
               </tr>
             </thead>

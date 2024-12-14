@@ -121,11 +121,11 @@ const Videos = () => {
   return (
     <div className="mb-7 mt-4">
       <div className="flex justify-between mb-7 mt-4">
-        <h1 className="flex gap-4">
-          <button className="text-[#EF4849] -mt-3" onClick={() => navigate(-1)}>
+        <h1 className="flex gap-4 text-[#2F799E]">
+          <button className=" -mt-3" onClick={() => navigate(-1)}>
             <FaArrowLeft />
           </button>
-          <span className="text-lg font-semibold">User Management</span>
+          <span className="text-lg font-semibold">Videos</span>
         </h1>
         <button
           onClick={() => setOpenAddModal(true)}
