@@ -133,11 +133,12 @@ const SidBar = () => {
   };
 
   // Logout Function
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/login");
-  };
-
+  const handleLogOut = () => {
+    localStorage.removeItem('accessToken')
+   
+    localStorage.removeItem('email')
+        navigate("/login");
+  }
   return (
     <div className="custom-sidebar h-full bg-[#2F799E]">
       {/* Logo */}
@@ -219,7 +220,7 @@ const SidBar = () => {
 
       <div className="custom-sidebar-footer absolute bottom-0 w-full p-4">
         <button
-          onClick={handleLogout}
+           onClick={handleLogOut}
           className="w-full flex bg-white text-start rounded text-black p-3"
         >
           <span className="text-2xl">

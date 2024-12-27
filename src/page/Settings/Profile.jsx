@@ -1,16 +1,14 @@
 import { useState, useEffect } from "react";
 import { Avatar, Upload } from "antd";
 import { FaCamera } from "react-icons/fa";
-import UseAdminProfile from "../../hook/UseAdminProfile";
-import UseAxios from "../../hook/UseAxios";
-import Swal from "sweetalert2";
+
 
 const Profile = () => {
   const [profilePic, setProfilePic] = useState(null);
   const [activeTab, setActiveTab] = useState("1");
 
-  const [admin, isLoading, refetch] = UseAdminProfile();
-  const axiosUrl = UseAxios();
+  
+ 
 
   const [formData, setFormData] = useState({
     username: '',
@@ -183,7 +181,7 @@ const Profile = () => {
                   id="email"
                   className="w-full rounded-sm p-2 mt-2 border bg-gray-200"
                   placeholder="Email"
-                  defaultValue={admin?.auth?.email || ""}
+                 
                   disabled
                 />
               </div>
@@ -327,7 +325,7 @@ const Profile = () => {
             <FaCamera className="text-gray-600 w-5 h-5" />
           </Upload>
         </div>
-        <p className="text-lg font-semibold mt-4">{admin?.user?.name || "Loading..."}</p>
+        <p className="text-lg font-semibold mt-4">{ "Loading..."}</p>
       </div>
 
       {/* Custom Tabs Section */}

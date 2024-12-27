@@ -1,54 +1,47 @@
 import login from "../assets/auth/login.png";
 import { Checkbox, Form, Input } from "antd";
 import { Link, useNavigate } from "react-router-dom";
-import UseAxios from "../hook/UseAxios";
 import { useState } from "react";
 import Swal from "sweetalert2";
+import { useLoginAdminMutation } from "../redux/Api/userApi";
+import { jwtDecode } from "jwt-decode";
 const Login = () => {
+  
+
   const [loading, setLoading] = useState(false);
-  // const axiosUrl = UseAxios();
-  // const navigate = useNavigate();
+  const [loginAdmin] = useLoginAdminMutation();
+  const navigate = useNavigate()
+
 
   const onFinish = async (values) => {
+    
+    
+
     console.log(values);
-    setLoading(true);
-    //   try {
-    //     const response = await axiosUrl.post("/dashboard/login", values);
-    //     if (response.status === 200) {
-    //       localStorage.setItem("token", response.data.token);
+    const res = loginAdmin(values)
+      .unwrap()
 
-    //       Swal.fire({
-    //         title: "Login Successful!",
-    //         text: "Welcome back!",
-    //         icon: "success",
-    //         confirmButtonText: "OK"
-    //       });
+      .then((payload) => {
+        if (payload?.data?.accessToken) {
+          const decoded = jwtDecode(payload?.data?.accessToken);
+          console.log(decoded);
 
-    //       navigate("/");
-    //     }
-    //   } catch (error) {
-    //     console.error("Login failed:", error.response?.data?.message || error.message);
-
-    //     Swal.fire({
-    //       title: "Login Failed",
-    //       text: error.response?.data?.message || "Login failed. Please try again.",
-    //       icon: "error",
-    //       confirmButtonText: "Try Again"
-    //     });
-    //   } finally {
-    //     setLoading(false);
-    //   }
-    // };
-
-    // const onFinishFailed = (errorInfo) => {
-    //   console.log("Failed:", errorInfo);
-
-    //   Swal.fire({
-    //     title: "Form Validation Failed",
-    //     text: "Please fill all required fields correctly.",
-    //     icon: "warning",
-    //     confirmButtonText: "OK"
-    //   });
+          if(decoded?.role==="superAdmin"){
+            localStorage.setItem(
+              "accessToken",
+              JSON.stringify(payload?.data?.accessToken)
+            );
+            alert('sucess')
+            return navigate("/");
+          }
+          
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    
+   
   };
 
   const onFinishFailed = (errorInfo) => {

@@ -1,175 +1,151 @@
-import { Modal } from "antd";
-import img from "../../assets/userdashboard/img.png";
-import { useState } from "react";
+import React, { useState } from "react";
+import { Table, Button, Modal, Input, Upload, message } from "antd";
 import { FaArrowLeft } from "react-icons/fa";
 import { MdOutlineModeEdit } from "react-icons/md";
 import { RiDeleteBin6Line, RiGalleryFill } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
-
-import UseCategory from "../../hook/UseCategory";
-import UseAxios from "../../hook/UseAxios";
+import { imageUrl } from "../../redux/Api/baseApi";
+import {
+  useGetCategoryQuery,
+  useUpdateCategoryMutation,
+  useDeleteCategoryMutation,
+} from "../../redux/Api/categoryApi";
 
 const CategoryManagements = () => {
   const [openAddModal, setOpenAddModal] = useState(false);
   const [editModal, setEditModal] = useState({ isOpen: false, id: null });
-  const navigate = useNavigate();
-
   const [newCategory, setNewCategory] = useState("");
   const [editedCategory, setEditedCategory] = useState("");
   const [image, setImage] = useState(null);
-  const axiosUrl = UseAxios();
+  const [editedImage, setEditedImage] = useState(null);
 
-  const [category, isLoading, refetch] = UseCategory();
-  console.log(category);
+  // Fetch categories from the API
+  const { data: categoriesData, isLoading, error } = useGetCategoryQuery();
+  const [addCategory] = useUpdateCategoryMutation();
+  const [deleteCategory] = useDeleteCategoryMutation();
+  const [updateCategory] = useUpdateCategoryMutation();
 
-  const tableData = [
-    { id: 1, name: "Classics Music", title: "Classics Music", total: "01" },
-    { id: 2, name: "Classics Music", title: "Jazz Night", total: "02" },
-    { id: 3, name: "Classics Music", title: "Rock Fest", total: "03" },
-  ];
+  const navigate = useNavigate();
 
+  // Add new category
   const handleAddCategory = async () => {
-    console.log("New Category Added:", newCategory);
+    if (!newCategory || !image) {
+      alert("Please fill out all fields and upload an image.");
+      return;
+    }
 
-    // try {
-    //   const response = await axiosUrl.post("/category/create", {
-    //     title: newCategory,
-    //   });
-    //   console.log(response);
+    const formData = new FormData();
+    formData.append("name", newCategory);
+    formData.append("category_image", image);
 
-    //   if (response.status === 201) {
-    //     Swal.fire({
-    //       title: "Success",
-    //       text: response.data.message,
-    //       icon: "success",
-    //       confirmButtonText: "OK",
-    //     });
-    //     refetch();
-    //   } else {
-    //     Swal.fire({
-    //       title: "Error",
-    //       text: "Failed to add the category. Please try again.",
-    //       icon: "error",
-    //       confirmButtonText: "OK",
-    //     });
-    //   }
-    // } catch (error) {
-    //   console.error("Error adding category:", error);
-    //   Swal.fire({
-    //     title: "Error",
-    //     text: "Something went wrong! Please try again later.",
-    //     icon: "error",
-    //     confirmButtonText: "OK",
-    //   });
-    // }
-
-    setOpenAddModal(false);
-    setNewCategory("");
-  };
-
-  const handleEditCategory = async () => {
-    console.log("Category Edited:", editedCategory);
-
-    // if (!editedCategory) {
-    //   Swal.fire({
-    //     title: "Error",
-    //     text: "Category name cannot be empty.",
-    //     icon: "error",
-    //     confirmButtonText: "OK",
-    //   });
-    //   return;
-    // }
-
-    // try {
-    //   const response = await axiosUrl.put(`/category/update/${editModal.id}`, {
-    //     title: editedCategory,
-    //   });
-
-    //   if (response.status === 200) {
-    //     Swal.fire({
-    //       title: "Success",
-    //       text: response.data.message || "Category updated successfully!",
-    //       icon: "success",
-    //       confirmButtonText: "OK",
-    //     });
-    //     refetch();
-    //   } else {
-    //     Swal.fire({
-    //       title: "Error",
-    //       text: "Failed to update the category. Please try again.",
-    //       icon: "error",
-    //       confirmButtonText: "OK",
-    //     });
-    //   }
-    // } catch (error) {
-    //   console.error("Error updating category:", error);
-    //   Swal.fire({
-    //     title: "Error",
-    //     text: "Something went wrong! Please try again later.",
-    //     icon: "error",
-    //     confirmButtonText: "OK",
-    //   });
-    // }
-
-    setEditModal({ isOpen: false, id: null });
-    setEditedCategory("");
-  };
-
-  const hndleDelet = async (id) => {
-    // Swal.fire({
-    //   title: "Are you sure?",
-    //   text: "You won't be able to revert this!",
-    //   icon: "warning",
-    //   showCancelButton: true,
-    //   confirmButtonColor: "#3085d6",
-    //   cancelButtonColor: "#d33",
-    //   confirmButtonText: "Yes, Delete it!",
-    // }).then(async (result) => {
-    //   if (result.isConfirmed) {
-    //     try {
-    //       const response = await axiosUrl.delete(`/category/delete/${id}`);
-    //       if (response.status === 200) {
-    //         Swal.fire({
-    //           title: "Deleted!",
-    //           text: response.data.message || "Category has been deleted.",
-    //           icon: "success",
-    //         });
-    //         refetch();
-    //       } else {
-    //         Swal.fire({
-    //           title: "Error",
-    //           text: "Failed to delete the category. Please try again.",
-    //           icon: "error",
-    //         });
-    //       }
-    //     } catch (error) {
-    //       console.error("Error deleting category:", error);
-    //       Swal.fire({
-    //         title: "Error",
-    //         text: "Something went wrong! Please try again later.",
-    //         icon: "error",
-    //       });
-    //     }
-    //   }
-    // });
-  };
-
-  const handleImageChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImage(reader.result); // Set the image URL in state
-      };
-      reader.readAsDataURL(file);
+    try {
+      await addCategory(formData).unwrap();
+      message.success("Category added successfully!");
+      setOpenAddModal(false);
+      setNewCategory("");
+      setImage(null);
+    } catch (err) {
+      console.error("Failed to add category:", err);
+      message.error("Failed to add category.");
     }
   };
+
+  // Update category
+  const handleUpdateCategory = async () => {
+    if (!editedCategory) {
+      alert("Category name cannot be empty.");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("name", editedCategory);
+    if (editedImage) {
+      formData.append("category_image", editedImage);
+    }
+
+    try {
+      await updateCategory({ id: editModal.id, body: formData }).unwrap();
+      message.success("Category updated successfully!");
+      setEditModal({ isOpen: false, id: null });
+      setEditedCategory("");
+      setEditedImage(null);
+    } catch (err) {
+      console.error("Failed to update category:", err);
+      message.error("Failed to update category.");
+    }
+  };
+
+  // Delete category
+  const handleDeleteCategory = async (id) => {
+    try {
+      await deleteCategory(id).unwrap();
+      message.success("Category deleted successfully!");
+    } catch (err) {
+      console.error("Failed to delete category:", err);
+      message.error("Failed to delete category.");
+    }
+  };
+
+  // Open edit modal with default values
+  const handleOpenEditModal = (record) => {
+    setEditModal({ isOpen: true, id: record._id });
+    setEditedCategory(record.name); // Prepopulate the category name
+    setEditedImage(null); // Reset image to avoid prepopulating
+  };
+
+  // Table columns definition
+  const columns = [
+    {
+      title: "SL no.",
+      dataIndex: "_id",
+      key: "_id",
+      render: (_, __, index) => index + 1,
+    },
+    {
+      title: "Category Name",
+      dataIndex: "name",
+      key: "name",
+      align: "center",
+    },
+    {
+      title: "Image",
+      key: "category_image",
+      align: "center",
+      render: (_, record) => (
+        <div className="flex justify-center">
+          <img
+            className="w-16 h-16 object-cover rounded"
+            src={`${imageUrl}/${record.category_image}`}
+            alt={record.name}
+          />
+        </div>
+      ),
+    },
+    {
+      title: "Actions",
+      key: "actions",
+      align: "right",
+      render: (_, record) => (
+        <div className="flex gap-2 justify-end">
+          <Button
+            icon={<MdOutlineModeEdit />}
+            style={{ backgroundColor: "#2F799E", color: "#fff" }}
+            onClick={() => handleOpenEditModal(record)}
+          />
+          <Button
+            icon={<RiDeleteBin6Line />}
+            style={{ backgroundColor: "#FF5454", color: "#fff" }}
+            onClick={() => handleDeleteCategory(record._id)}
+          />
+        </div>
+      ),
+    },
+  ];
 
   return (
     <div className="mb-7 mt-4">
       <h1 className="flex gap-4 text-[#2F799E]">
-        <button className=" " onClick={() => navigate(-1)}>
+        <button onClick={() => navigate(-1)}>
           <FaArrowLeft />
         </button>
         <span className="text-lg font-semibold">Category Management</span>
@@ -186,138 +162,92 @@ const CategoryManagements = () => {
       </div>
 
       <div className="mt-16">
-        <div className="overflow-x-auto">
-          <table className="min-w-full">
-            <thead>
-              <tr>
-                <th className="px-4 py-2 text-left">SL no.</th>
-                <th className="px-4 py-2 text-center">Category Name</th>
-                <th className="px-4 py-2 text-center">Image</th>
-                <th className="px-4 py-2 text-end">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {/* category remove kore table data diyeci just check korar jonno  */}
-              {tableData.map((item, index) => (
-                <tr key={item.id}>
-                  <td className="px-4 py-2 text-left">{index + 1}</td>
-                  <td className="px-4 py-2 text-center">{item.name}</td>
-                  <td className="px-4 py-2 text-center">
-                    <div className="flex justify-center">
-                      <img className="w-16" src={img} alt="" />
-                    </div>
-                  </td>
-
-                  <td className="px-4 py-2 text-right flex gap-2 justify-end">
-                    <div
-                      onClick={() =>
-                        setEditModal({ isOpen: true, id: item._id })
-                      }
-                      className="w-[36px] h-[36px] text-lg bg-[#2F799E] flex justify-center items-center text-white rounded cursor-pointer"
-                    >
-                      <MdOutlineModeEdit />
-                    </div>
-
-                    <div
-                      onClick={() => hndleDelet(item._id)}
-                      className="w-[36px] h-[36px] text-lg bg-[#FF5454] flex justify-center items-center text-white rounded cursor-pointer"
-                    >
-                      <RiDeleteBin6Line />
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        {isLoading ? (
+          <p>Loading categories...</p>
+        ) : error ? (
+          <p>Failed to load categories.</p>
+        ) : (
+          <Table
+            dataSource={categoriesData?.data}
+            columns={columns}
+            rowKey="_id"
+            pagination={false}
+            bordered
+          />
+        )}
       </div>
 
+      {/* Add Category Modal */}
       <Modal
         centered
         open={openAddModal}
         onCancel={() => {
           setOpenAddModal(false);
-          setNewCategory(""); // Reset the category value
-          setImage(null); // Reset the image value
+          setNewCategory("");
+          setImage(null);
         }}
         footer={null}
         width={600}
       >
         <div className="mb-20 mt-4">
-          <div className="">
-            <div className="font-bold text-center mb-11">+ Add Category</div>
+          <div className="font-bold text-center mb-11">+ Add Category</div>
+          <div className="mx-20">
+            <p className="mb-2">Category Name</p>
+            <Input
+              placeholder="Enter category name"
+              value={newCategory}
+              onChange={(e) => setNewCategory(e.target.value)}
+            />
             <div>
-              <div className="mx-20">
-                <p className="mb-2">Category Name</p>
-                <input
-                  className="border w-full border-neutral-400 rounded p-2 px-4 bg-[#00000000]"
-                  type="text"
-                  placeholder="Enter category name"
-                  value={newCategory}
-                  onChange={(e) => setNewCategory(e.target.value)}
-                />
-
-                <div className="">
-                  <div>
-                    <p className="mt-4 mb-2">Thumbs Image</p>
-
-                    <div className="border px-5 py-4 rounded">
-                      <p className="text-gray-600 text-center pb-3">
-                        Suggested dimension [344×184]
+              <p className="mt-4 mb-2">Thumbs Image</p>
+              <Upload
+                showUploadList={false}
+                beforeUpload={(file) => {
+                  setImage(file);
+                  return false;
+                }}
+              >
+                <div className="border-2 border-dashed border-neutral-400 rounded h-[124px] flex flex-col items-center justify-center relative">
+                  {image ? (
+                    <img
+                      src={URL.createObjectURL(image)}
+                      alt="Uploaded"
+                      className="object-contain w-full h-full"
+                    />
+                  ) : (
+                    <>
+                      <p className="text-gray-600">Drop image file here to upload</p>
+                      <p className="text-4xl text-gray-600 mt-5">
+                        <RiGalleryFill />
                       </p>
-                      <div className="border-2 border-dashed border-neutral-400 rounded h-[124px] flex flex-col items-center justify-center relative">
-                        {image ? (
-                          <img
-                            src={image}
-                            alt="Uploaded"
-                            className="object-contain w-full h-full"
-                          />
-                        ) : (
-                          <>
-                            <p className="text-gray-600">
-                              Drop image file here to upload
-                            </p>
-                            <p className="text-gray-600">(or click)</p>
-                            <p className="text-4xl text-gray-600 mt-5">
-                              <RiGalleryFill />
-                            </p>
-                          </>
-                        )}
-                        {/* Hidden input for file upload */}
-                        <input
-                          type="file"
-                          className="absolute inset-0 opacity-0 cursor-pointer"
-                          onChange={handleImageChange}
-                        />
-                      </div>
-                    </div>
-                  </div>
+                    </>
+                  )}
                 </div>
-
-                <div className="w-full flex gap-3 mt-11">
-                  <button
-                    onClick={handleAddCategory}
-                    className="bg-[#2F799E] w-full py-2 px-4 rounded text-white"
-                  >
-                    Save
-                  </button>
-                  <button
-                    onClick={() => {
-                      setOpenAddModal(false); // Close the modal
-                      setNewCategory(""); // Reset category value
-                      setImage(null); // Reset image value
-                    }}
-                    className="bg-[#D9000A] w-full rounded py-2 px-4 text-white"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              </div>
+              </Upload>
+            </div>
+            <div className="w-full flex gap-3 mt-11">
+              <button
+                onClick={handleAddCategory}
+                className="bg-[#2F799E] w-full py-2 px-4 rounded text-white"
+              >
+                Save
+              </button>
+              <button
+                onClick={() => {
+                  setOpenAddModal(false);
+                  setNewCategory("");
+                  setImage(null);
+                }}
+                className="bg-[#D9000A] w-full rounded py-2 px-4 text-white"
+              >
+                Cancel
+              </button>
             </div>
           </div>
         </div>
       </Modal>
 
+      {/* Edit Category Modal */}
       <Modal
         centered
         open={editModal.isOpen}
@@ -326,74 +256,49 @@ const CategoryManagements = () => {
         width={600}
       >
         <div className="mb-11 mt-4">
-          <div className="">
-            <div className="font-bold text-center mb-11">Edit Category</div>
+          <div className="font-bold text-center mb-11">Edit Category</div>
+          <div className="mx-20">
+            <p className="mb-2">Category</p>
+            <Input
+              placeholder="Edit category name"
+              value={editedCategory}
+              onChange={(e) => setEditedCategory(e.target.value)}
+            />
             <div>
-              <div className="mx-20">
-                <p className="mb-2">Category</p>
-                <input
-                  className="border w-full border-neutral-400 rounded p-2 px-4 bg-[#00000000]"
-                  type="text"
-                  placeholder="Edit category name"
-                  value={
-                    editedCategory ||
-                    category.find((item) => item._id === editModal.id)?.title ||
-                    ""
-                  }
-                  onChange={(e) => setEditedCategory(e.target.value)}
-                />
-
-                <div className="">
-                  <div>
-                    <p className="mt-4 mb-2">Thumbs Image</p>
-
-                    <div className="border px-5 py-4 rounded">
-                      <p className="text-gray-600 text-center pb-3">
-                        Suggested dimension [344×184]
-                      </p>
-                      <div className="border-2 border-dashed border-neutral-400 rounded h-[124px] flex flex-col items-center justify-center relative">
-                        {image ? (
-                          <img
-                            src={image}
-                            alt="Uploaded"
-                            className="object-contain w-full h-full"
-                          />
-                        ) : (
-                          <>
-                            <p className="text-gray-600">
-                              Drop image file here to upload
-                            </p>
-                            <p className="text-gray-600">(or click)</p>
-                            <p className="text-4xl text-gray-600 mt-5">
-                              <RiGalleryFill />
-                            </p>
-                          </>
-                        )}
-                        {/* Hidden input for file upload */}
-                        <input
-                          type="file"
-                          className="absolute inset-0 opacity-0 cursor-pointer"
-                          onChange={handleImageChange}
-                        />
-                      </div>
-                    </div>
-                  </div>
+              <p className="mt-4 mb-2">Thumbs Image</p>
+              <Upload
+                showUploadList={false}
+                beforeUpload={(file) => {
+                  setEditedImage(file);
+                  return false;
+                }}
+              >
+                <div className="border-2 border-dashed border-neutral-400 rounded h-[124px] flex flex-col items-center justify-center relative">
+                  {editedImage ? (
+                    <img
+                      src={URL.createObjectURL(editedImage)}
+                      alt="Uploaded"
+                      className="object-contain w-full h-full"
+                    />
+                  ) : (
+                    <p className="text-gray-600">(Optional) Upload new image</p>
+                  )}
                 </div>
-                <div className="w-full flex gap-3 mt-6">
-                  <button
-                    onClick={() => setEditModal({ isOpen: false, id: null })}
-                    className="bg-[#D9000A] w-full rounded py-2 px-4 text-white"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={handleEditCategory}
-                    className="bg-[#004466] w-full py-2 px-4 rounded text-white"
-                  >
-                    Save
-                  </button>
-                </div>
-              </div>
+              </Upload>
+            </div>
+            <div className="w-full flex gap-3 mt-6">
+              <button
+                onClick={() => setEditModal({ isOpen: false, id: null })}
+                className="bg-[#D9000A] w-full rounded py-2 px-4 text-white"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleUpdateCategory}
+                className="bg-[#2F799E] w-full py-2 px-4 rounded text-white"
+              >
+                Save
+              </button>
             </div>
           </div>
         </div>

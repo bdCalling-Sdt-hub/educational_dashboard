@@ -3,7 +3,7 @@ import img from "../../assets/userdashboard/img.png";
 import { FaArrowLeft } from "react-icons/fa";
 import { Modal } from "antd";
 import { Link, useNavigate } from "react-router-dom";
-import UseCategory from "../../hook/UseCategory";
+
 import { MdOutlineModeEdit } from "react-icons/md";
 import { RiDeleteBin6Line, RiGalleryFill } from "react-icons/ri";
 const videos = [
@@ -115,8 +115,8 @@ const Videos = () => {
   };
   // const axiosUrl = UseAxios();
 
-  const [category, isLoading, refetch] = UseCategory();
-  console.log(category);
+
+
 
   return (
     <div className="mb-7 mt-4">

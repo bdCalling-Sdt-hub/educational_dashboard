@@ -1,48 +1,25 @@
 import login from "../assets/auth/login.png";
 import { Form, Input } from "antd";
-import { IoIosArrowRoundBack } from "react-icons/io";
-import { useNavigate } from "react-router-dom";
-import UseAxios from "../hook/UseAxios";
-import Swal from "sweetalert2";  
+
 import { useState } from "react";
+import { useForgotPasswordMutation } from "../redux/Api/userApi";
+import { useNavigate } from "react-router-dom";
 
 const ForgetPass = () => {
-  // const axiosUrl = UseAxios();
-  // const navigate = useNavigate();
+  const [forgotPassword] = useForgotPasswordMutation()
   const [isLoading, setIsLoading] = useState(false);  
-
+const navigate = useNavigate()
   const onFinish = async (values) => {
-    setIsLoading(true); 
+    
     console.log(values)
-    // try {
-    //   const response = await axiosUrl.post("/auth/forgot-password", {
-    //     email: values.email,
-    //   });
-
-    //   console.log(response.data);
-
-    //   if (response.data.message) {
-    //     Swal.fire({
-    //       title: "OTP Sent!",
-    //       text: "Check your email for the OTP to reset your password.",
-    //       icon: "success",
-    //       confirmButtonText: "OK",
-    //     });
-
-    //     localStorage.setItem("email", values.email);
-    //     navigate("/verify");
-    //   }
-    // } catch (error) {
-    //   console.error("Error:", error);
-    //   Swal.fire({
-    //     title: "Error",
-    //     text: "Failed to send OTP. Please try again.",
-    //     icon: "error",
-    //     confirmButtonText: "Try Again",
-    //   });
-    // } finally {
-    //   setIsLoading(false);  
-    // }
+    forgotPassword(values).unwrap()
+            .then((payload) => {
+                alert('success')
+                navigate('/verify')
+                localStorage.setItem('email',  values?.email)
+            })
+            .catch((error) => console.error(error?.data?.message));
+    
   };
 
   const onFinishFailed = (errorInfo) => {
