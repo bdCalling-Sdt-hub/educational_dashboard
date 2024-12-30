@@ -331,4 +331,3 @@ const CategoryManagements = () => {
 };
 
 export default CategoryManagements;
-/
