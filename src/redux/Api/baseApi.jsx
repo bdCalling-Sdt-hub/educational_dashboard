@@ -19,4 +19,3 @@ export const baseApi = createApi({
 });
 
 export const imageUrl = "http://192.168.10.11:6050";
-

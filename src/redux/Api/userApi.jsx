@@ -58,15 +58,19 @@ const useApi = baseApi.injectEndpoints({
       },
       invalidatesTags: ["updateProfile"],
     }),
+
+
     changePassword: builder.mutation({
       query: (data) => {
         return {
           url: "/auth/change-password",
-          method: "PATCH",
+          method: "POST",
           body: data,
         };
       },
     }),
+
+
     getHostUser: builder.query({
       query: ({ user, page, search }) => {
         return {

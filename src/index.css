@@ -24,7 +24,15 @@ select option {
 }
 
 
+.custom-sidebar {
+  overflow-y: auto;
+  -ms-overflow-style: none; /* For Internet Explorer and Edge */
+  scrollbar-width: none; /* For Firefox */
+}
 
+.custom-sidebar::-webkit-scrollbar {
+  display: none; /* For Chrome, Safari, and Opera */
+}
 
 
 /* Remove all borders from the Ant Design Table */

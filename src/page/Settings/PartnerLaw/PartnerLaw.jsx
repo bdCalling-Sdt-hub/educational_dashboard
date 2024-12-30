@@ -1,21 +1,31 @@
-import { useState, useRef } from "react";
+import React, { useState, useRef, useMemo, useEffect } from "react";
 import JoditEditor from "jodit-react";
-import { FaArrowLeft } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
+import { IoArrowBackSharp } from "react-icons/io5";
 
-const PartnerLaw = () => {
-    const editor = useRef(null);
+import toast from "react-hot-toast";
+import { useGetLawQuery, useUpdateLawMutation } from "../../../redux/Api/privecyApi";
+
+const TermsCondition = () => {
+  const { data: getTerms } = useGetLawQuery();
+
+  const [addPrivecy] = useUpdateLawMutation();
+  const editor = useRef(null);
   const [content, setContent] = useState("");
-  // const [isLoading, seLoading] = useState(false)
-  const navigate = useNavigate();
-  // const handleTerms = () => {
-  //     console.log(content)
-  // }
+  const [isLoading, seLoading] = useState(false);
+  const [id, setId] = useState("");
+
+  const handleTerms = async () => {
+    const description = content;  
+    const res = await addPrivecy({ description }).unwrap();
+    console.log("res", res);
+    toast.success("Privecy Update successfully!");
+  };
   const config = {
     readonly: false,
     placeholder: "Start typings...",
     style: {
-      height: 600,
+      height: 400,
     },
     buttons: [
       "image",
@@ -29,34 +39,41 @@ const PartnerLaw = () => {
       "align",
     ],
   };
+  useEffect(() => {
+    setContent(getTerms?.data?.description);
+  }, [getTerms]);
 
-    return (
-        <div className=" mx-auto ">
-      <div className="flex justify-between mb-7 mt-4">
-        <h1 className="flex gap-4 text-[#2F799E]">
+  return (
+    <>
+      <div className="flex justify-between mb-7 mt-4 text-[#2F799E]">
+        <h1 className="flex gap-4">
           <button className="" onClick={() => navigate(-1)}>
-            <FaArrowLeft />
+            <IoArrowBackSharp />
           </button>
           <span className="text-lg font-semibold">Partner Law Firms</span>
         </h1>
       </div>
 
-      <JoditEditor
-        ref={editor}
-        value={content}
-        config={config}
-        tabIndex={1}
-        onBlur={(newContent) => setContent(newContent)}
-        // onChange={newContent => { }}
-      />
-
-      <div className="mt-5 flex justify-center">
-        <button className="bg-[#2F799E] py-2 px-4 rounded text-white">
-          Save & change
-        </button>
+      <div className="custom-jodit-editor mx-5 ">
+        <JoditEditor
+          ref={editor}
+          value={content}
+          config={config}
+          tabIndex={1}
+          onBlur={(newContent) => setContent(newContent)}
+          onChange={(newContent) => {}}
+        />
+        <div className="flex items-center justify-center mt-5">
+          <button
+            onClick={handleTerms}
+            className="bg-black text-white px-4 py-2 rounded-full test"
+          >
+            Save Changes
+          </button>
+        </div>
       </div>
-    </div>
-    );
+    </>
+  );
 };
 
-export default PartnerLaw;
+export default TermsCondition;

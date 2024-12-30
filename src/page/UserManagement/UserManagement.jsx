@@ -11,6 +11,8 @@ import {
   useBlockUserMutation,
 } from "../../redux/Api/UserManagementApi";
 import toast from "react-hot-toast";
+import Loading from "../../loading/Loading";
+
 
 const UserManagement = () => {
   const [modal2Open, setModal2Open] = useState(false);
@@ -58,7 +60,7 @@ const UserManagement = () => {
       }
       record.status = newStatus;
     } catch (error) {
-      console.error("Failed to update status:", error);
+      toast.error("Failed to update status:", error);
     }
   };
 
@@ -138,7 +140,7 @@ const UserManagement = () => {
       </div>
 
       {isLoading ? (
-        <p>Loading...</p>
+        <p className="-mt-32"><Loading></Loading></p>
       ) : error ? (
         <p>Failed to load user data.</p>
       ) : (

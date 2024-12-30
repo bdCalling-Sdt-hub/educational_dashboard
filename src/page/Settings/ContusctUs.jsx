@@ -1,64 +1,85 @@
-import  { useState, useRef, } from 'react';
-import JoditEditor from 'jodit-react';
-import { FaArrowLeft } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useRef, useMemo, useEffect } from "react";
+import JoditEditor from "jodit-react";
+import { Link } from "react-router-dom";
+import { IoArrowBackSharp } from "react-icons/io5";
+import {
+  useGetContuctQuery,
+  useGetprivecyConditionsQuery,
+  useGetTermsConditionsQuery,
+  usePostPrivecyMutation,
+  useUpdateContuctMutation,
+  useUpdateTermsConditionMutation,
+} from "../../redux/Api/privecyApi";
+import toast from "react-hot-toast";
 
 const ContusctUs = () => {
+  const { data: getTerms } = useGetContuctQuery();
 
-    const editor = useRef(null);
-    const [content, setContent] = useState('');
-    // const [isLoading, seLoading] = useState(false)
-    const navigate = useNavigate(); 
-    // const handleTerms = () => {
-    //     console.log(content)
-    // }
-    const config = {
-        readonly: false,
-        placeholder: 'Start typings...',
-        style: {
-            height: 600,
-        },
-        buttons: [
-            'image', 'fontsize', 'bold', 'italic', 'underline', '|',
-            'font', 'brush',
-            'align'
-        ]
-    }
-    return (
-        <div className=" mx-auto ">
-        <div className="flex justify-between mb-7 mt-4">
-        <h1 className="flex gap-4 text-[#2F799E]">
-            <button
-              className=" "
-              onClick={() => navigate(-1)} 
-            >
-              <FaArrowLeft />
-            </button>
-            <span className="text-lg font-semibold">Terms & Condition</span>
-          </h1>
-          
-        </div>
-  
+  const [addPrivecy] = useUpdateContuctMutation();
+  const editor = useRef(null);
+  const [content, setContent] = useState("");
+  const [isLoading, seLoading] = useState(false);
+  const [id, setId] = useState("");
+
+  const handleTerms = async () => {
+    const description = content;  
+    const res = await addPrivecy({ description }).unwrap();
+    console.log("res", res);
+    toast.success("Privecy Update successfully!");
+  };
+  const config = {
+    readonly: false,
+    placeholder: "Start typings...",
+    style: {
+      height: 400,
+    },
+    buttons: [
+      "image",
+      "fontsize",
+      "bold",
+      "italic",
+      "underline",
+      "|",
+      "font",
+      "brush",
+      "align",
+    ],
+  };
+  useEffect(() => {
+    setContent(getTerms?.data?.description);
+  }, [getTerms]);
+
+  return (
+    <>
+      <div className="flex justify-between mb-7 mt-4 text-[#2F799E]">
+        <h1 className="flex gap-4">
+          <button className="" onClick={() => navigate(-1)}>
+            <IoArrowBackSharp />
+          </button>
+          <span className="text-lg font-semibold">Contuct Us</span>
+        </h1>
+      </div>
+
+      <div className="custom-jodit-editor mx-5 ">
         <JoditEditor
           ref={editor}
           value={content}
           config={config}
           tabIndex={1}
-          onBlur={newContent => setContent(newContent)}
-          // onChange={newContent => { }}
+          onBlur={(newContent) => setContent(newContent)}
+          onChange={(newContent) => {}}
         />
-        
-  
-        <div className="mt-5 flex justify-center">
+        <div className="flex items-center justify-center mt-5">
           <button
-         
-            className="bg-[#2F799E] py-2 px-4 rounded text-white"
+            onClick={handleTerms}
+            className="bg-black text-white px-4 py-2 rounded-full test"
           >
-            Save & change
+            Save Changes
           </button>
         </div>
       </div>
-    );
+    </>
+  );
 };
 
 export default ContusctUs;

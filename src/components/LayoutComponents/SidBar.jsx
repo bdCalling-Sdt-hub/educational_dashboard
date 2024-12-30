@@ -140,7 +140,8 @@ const SidBar = () => {
         navigate("/login");
   }
   return (
-    <div className="custom-sidebar h-full bg-[#2F799E]">
+    <div className=" custom-sidebar fixed h-full w-80 bg-[#2F799E] ">
+      <div className="">
       {/* Logo */}
       <div className="custom-sidebar-logo flex justify-center py-3">
         <img src={login} alt="Logo" className="w-[90px]" />
@@ -218,7 +219,7 @@ const SidBar = () => {
       </div>
 
 
-      <div className="custom-sidebar-footer absolute bottom-0 w-full p-4">
+      <div className="custom-sidebar-footer absolute  w-full p-4">
         <button
            onClick={handleLogOut}
           className="w-full flex bg-white text-start rounded text-black p-3"
@@ -229,6 +230,7 @@ const SidBar = () => {
           <span className="ml-3">Log Out</span>
         </button>
       </div>
+    </div>
     </div>
   );
 };

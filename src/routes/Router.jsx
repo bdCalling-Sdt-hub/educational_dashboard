@@ -56,7 +56,7 @@ export const router = createBrowserRouter([
         element: <Articles></Articles>
       },
       {
-        path: "/dashboard/articles/articlesDetails",
+        path: "/dashboard/articles/articlesDetails/:id",
         element: <ArticleDetailsPage></ArticleDetailsPage>
       },
      

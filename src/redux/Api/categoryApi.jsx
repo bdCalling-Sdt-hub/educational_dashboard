@@ -12,7 +12,7 @@ const settingApi = baseApi.injectEndpoints({
         },
         providesTags: ['category']
     }),
-    updateCategory: builder.mutation({
+    postCategory: builder.mutation({
         query: (data) => {
             return {
                 url: '/category/create-category',
@@ -21,11 +21,12 @@ const settingApi = baseApi.injectEndpoints({
             }
         }, invalidatesTags: ['category']
     }),
-    getSubCategory: builder.query({
-        query: (categoryId) => {
+    updateCategory: builder.mutation({
+        query: ({categoryId, data}) => {
           return {
             url: `/category/update-category/${categoryId}`,
             method: "PATCH",
+            body: data
           };
         },
         providesTags: ["category"],
@@ -46,8 +47,8 @@ const settingApi = baseApi.injectEndpoints({
 
 export const {
 useGetCategoryQuery,
+usePostCategoryMutation,
 useUpdateCategoryMutation,
-useGetSubCategoryQuery,
 useDeleteCategoryMutation
 
  

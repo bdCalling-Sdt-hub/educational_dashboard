@@ -1,347 +1,412 @@
-import { useState, useEffect } from "react";
-import { Avatar, Upload } from "antd";
-import { FaCamera } from "react-icons/fa";
+import React, { useEffect, useState } from "react";
+import { Button, Form, Input, Spin } from "antd";
+import { CiEdit } from "react-icons/ci";
+
+import { IoCameraOutline } from "react-icons/io5";
+// import { useChangePasswordMutation } from "../../redux/Api/user";
+import { LoadingOutlined } from "@ant-design/icons";
+import { useNavigate } from "react-router-dom";
+import { imageUrl } from "../../redux/Api/baseApi";
+import { useGetAdminQuery, useUpdateProfileeMutation } from "../../redux/Api/AdminApi";
+import { toast } from "sonner";
+import { useChangePasswordMutation } from "../../redux/Api/userApi";
+const admin = false;
 
 
 const Profile = () => {
-  const [profilePic, setProfilePic] = useState(null);
-  const [activeTab, setActiveTab] = useState("1");
+  const [image, setImage] = useState();
+  const [form] = Form.useForm();
+  const [tab, setTab] = useState(
+    new URLSearchParams(window.location.search).get("tab") || "Profile"
+  );
+  const [passError, setPassError] = useState("");
+  const [updateProfile, { isLoading: updateLoading }] =
+    useUpdateProfileeMutation();
+  const navigate = useNavigate();
+  const [changePassword, { isLoading: changePasswordLoading }] =
+    useChangePasswordMutation();
 
+  const { data: adminData, isLoading: adminLoading } = useGetAdminQuery();
+  console.log(adminData)
+
+  const handlePageChange = (tab) => {
+    setTab(tab);
+    const params = new URLSearchParams(window.location.search);
+    params.set("tab", tab);
+    window.history.pushState(null, "", `?${params.toString()}`);
+  };
+
+  const handleChange = (e) => {
+    const file = e.target.files[0];
+    setImage(file);
+  };
   
- 
+  const onFinish = (values) => {
+    
+    console.log(values);
+    if (values?.newPassword === values.oldPassword) {
+      return setPassError("your old password cannot be your new password");
+    }
+    if (values?.newPassword !== values?.confirmNewPassword) {
+      return setPassError("Confirm password doesn't match");
+    } else {
+      setPassError("");
+    }
 
-  const [formData, setFormData] = useState({
-    username: '',
-    contactNo: '',
-    address: ''
-  });
-
-  const [passwordVisibility, setPasswordVisibility] = useState({
-    currentPassword: false,
-    newPassword: false,
-    confirmPassword: false
-  });
-
-  // useEffect(() => {
-  //   if (admin) {
-  //     setFormData({
-  //       username: admin?.user?.name || '',
-  //       contactNo: admin?.user?.contact || '',
-  //       address: admin?.user?.address || ''
-  //     });
-  //   }
-  // }, [admin]);
-
-  const handleProfilePicUpload = (e) => {
-    setProfilePic(e.file.originFileObj);
+    changePassword(values)
+      .unwrap()
+      .then((payload) => {
+        toast.success("Your password change successfully Please login again!");
+        localStorage.removeItem("accessToken");
+        navigate("/login");
+      })
+      .catch((error) => toast.error(error?.data?.message));
   };
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prevState => ({
-      ...prevState,
-      [name]: value
-    }));
+  useEffect(() => {
+    if (adminData?.data) {
+      const admin = adminData.data;
+      form.setFieldsValue({
+        name: admin.name,
+        email: admin.email,
+        phone: admin.phone,
+        address: admin.address || "",
+      });
+    }
+  }, [adminData, form]);
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    setImage(file);
   };
 
-  const handleProfileUpdate = async (e) => {
-    e.preventDefault();
-
-    // try {
-    //   const token = localStorage.getItem('token');
-
-    //   const response = await axiosUrl.put('/dashboard/update', {
-    //     name: formData.username,
-    //     contact: formData.contactNo,
-    //     address: formData.address
-    //   }, {
-    //     headers: {
-    //       'Authorization': `Bearer ${token}`
-    //     }
-    //   });
-
-    //   if (response.status === 200) {
-    //     Swal.fire({
-    //       icon: 'success',
-    //       title: 'Profile Updated!',
-    //       text: 'Your profile has been successfully updated.',
-    //       confirmButtonColor: '#02111E'
-    //     });
-        
-    //     refetch();
-    //   }
-    // } catch (error) {
-    //   Swal.fire({
-    //     icon: 'error',
-    //     title: 'Update Failed',
-    //     text: error.response?.data?.message || 'Failed to update profile. Please try again.',
-    //     confirmButtonColor: '#d33'
-    //   });
-    // }
+  const onEditProfile = (values) => {
+    const data = new FormData();
+    if (image) data.append("profile_image", image);
+    data.append("name", values.name);
+    data.append("address", values.address);
+    data.append("phone", values.phone);
+    updateProfile(data)
+      .unwrap()
+      .then(() => {
+        toast.success("Profile updated successfully");
+        // Redirect after success
+      })
+      .catch((error) => {
+        toast.error("Error updating profile:", error);
+      });
   };
 
-  const handlePasswordSubmit = async (e) => {
-    e.preventDefault();
-    // const form = e.target;
-    // const formData = new FormData(form);
+  if (adminLoading) {
+    return <Spin size="large" />;
+  }
 
-    // const currentPassword = formData.get("currentPassword");
-    // const newPassword = formData.get("newPassword");
-    // const confirmPassword = formData.get("confirmPassword");
+  const admin = adminData?.data;
 
-    // // Check if new passwords match
-    // if (newPassword !== confirmPassword) {
-    //   Swal.fire({
-    //     icon: 'error',
-    //     title: 'Password Mismatch',
-    //     text: 'New password and confirm password do not match!',
-    //     confirmButtonColor: '#d33'
-    //   });
-    //   return;
-    // }
+  console.log("image", image);
+  return (
+    <div>
+      <div className="rounded-md   bg-[#FEFEFE]">
+        <div className=" py-9 px-10 rounded flex items-center justify-center flex-col gap-6">
+          <div className="relative w-[140px] h-[124px] mx-auto">
+            <input
+              type="file"
+              onChange={handleImageChange}
+              id="img"
+              style={{ display: "none" }}
+            />
+            <img
+              style={{ width: 140, height: 140, borderRadius: "100%" }}
+              //   src={`${admin.avatar} ?${imageUrl}${admin.avatar} : ${image} `}
+              //   src={
+              //     admin?.avatar
+              //       ? `${imageUrl}${admin.avatar}`
+              //       : URL.createObjectURL(image)
+              //   }
+              src={`${
+                image
+                  ? URL.createObjectURL(image)
+                  : `${imageUrl}/${admin?.profile_image}`
+              }`}
+              alt="Admin Profile"
+            />
 
-    // if (newPassword.length < 8) {
-    //   Swal.fire({
-    //     icon: 'error',
-    //     title: 'Password Too Short',
-    //     text: 'Your new password must be at least 8 characters long.',
-    //     confirmButtonColor: '#d33'
-    //   });
-    //   return;
-    // }
+            {tab === "Profile" && (
+              <label
+                htmlFor="img"
+                className="
+                            absolute top-[80px] -right-2
+                            bg-white
+                            rounded-full
+                            w-8 h-8
+                            flex items-center justify-center
+                            cursor-pointer
+                        "
+              >
+                <IoCameraOutline className="text-black " />
+              </label>
+            )}
+          </div>
+          <div className="w-fit">
+            <p className="text-[#575757] text-[24px] leading-[32px] font-semibold">
+              {admin?.name || "A"}
+            </p>
+          </div>
+        </div>
 
-    // try {
-    //   const token = localStorage.getItem('token');
-
-    //   const response = await axiosUrl.put('/dashboard/change-password', {
-    //     password: currentPassword,
-    //     newPassword: newPassword,
-    //     confirmPassword: newPassword
-    //   }, {
-    //     headers: {
-    //       'Authorization': `Bearer ${token}`
-    //     }
-    //   });
-
-    //   if (response.status === 200) {
-    //     Swal.fire({
-    //       icon: 'success',
-    //       title: 'Password Updated!',
-    //       text: 'Your password has been successfully updated.',
-    //       confirmButtonColor: '#02111E'
-    //     });
-
-    //     form.reset();
-    //   }
-    // } catch (error) {
-    //   Swal.fire({
-    //     icon: 'error',
-    //     title: 'Update Failed',
-    //     text: error.response?.data?.message || 'Failed to update password. Please try again.',
-    //     confirmButtonColor: '#d33'
-    //   });
-    // }
-  };
-
-  const togglePasswordVisibility = (field) => {
-    setPasswordVisibility((prevState) => ({
-      ...prevState,
-      [field]: !prevState[field]
-    }));
-  };
-
-  const tabItems = [
-    {
-      key: "1",
-      label: "Edit Profile",
-      content: (
-        <form onSubmit={handleProfileUpdate}>
-          <div className="p-4">
-            <h2 className="text-xl font-semibold mb-4 text-center">Edit Your Profile</h2>
-            <div className="space-y-6">
-              <div className="form-group">
-                <label htmlFor="username">User Name</label>
-                <input
-                  type="text"
-                  name="username"
-                  className="w-full rounded-sm p-2 mt-2 border"
-                  id="username"
-                  placeholder="User Name"
-                  value={formData.username}
-                  onChange={handleInputChange}
-                  required
+        <div className="flex items-center justify-center gap-6 mb-6">
+          <p
+            onClick={() => handlePageChange("Profile")}
+            className={`
+                        ${
+                          tab === "Profile"
+                            ? "border-[var(--primary-color)] border-b-2 font-semibold text-[var(--primary-color)]"
+                            : "border-b-2 border-transparent font-normal text-gray-600"
+                        }
+                        cursor-pointer text-[16px] leading-5  
+                    `}
+          >
+            Edit Profile
+          </p>
+          <p
+            onClick={() => handlePageChange("Change Password")}
+            className={`
+                        ${
+                          tab === "Change Password"
+                            ? "border-[var(--primary-color)] border-b-2 font-semibold text-[var(--primary-color)]"
+                            : "border-b-2 border-transparent font-normal  text-gray-600"
+                        }
+                         cursor-pointer text-base leading-[18px]  
+                    `}
+          >
+            Change Password
+          </p>
+        </div>
+        {tab === "Profile" ? (
+          <div className="max-w-[480px] mx-auto rounded-lg p-6">
+            <h1 className="text-center text-[var(--primary-color)] leading-7 text-2xl font-medium mb-7">
+              Edit Your Profile
+            </h1>
+            <Form
+              onFinish={onEditProfile}
+              layout="vertical"
+              form={form}
+              initialValues={{
+                name: "",
+                email: "",
+                phone:'',
+                address: "",
+              }}
+            >
+              <Form.Item
+                name="name"
+                label={<p className="text-[16px] font-normal">User Name</p>}
+              >
+                <Input
+                  style={{
+                    width: "100%",
+                    height: 40,
+                    borderRadius: "5px",
+                    color: "#919191",
+                  }}
+                  className="text-[16px] leading-5"
+                  placeholder="Name"
                 />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="email">Email Address</label>
-                <input
-                  type="email"
-                  name="email"
-                  id="email"
-                  className="w-full rounded-sm p-2 mt-2 border bg-gray-200"
+              </Form.Item>
+              <Form.Item
+                name="email"
+                label={<p className="text-[16px] font-normal">Email</p>}
+              >
+                <Input
+                  style={{
+                    width: "100%",
+                    height: 40,
+                    borderRadius: "5px",
+                    color: "#919191",
+                  }}
+                  className="text-[16px] leading-5"
                   placeholder="Email"
-                 
                   disabled
                 />
-              </div>
+              </Form.Item>
 
-              <div className="form-group">
-                <label htmlFor="contactNo">Contact No.</label>
-                <input
-                  type="text"
-                  name="contactNo"
-                  id="contactNo"
-                  className="w-full rounded-sm p-2 mt-2 border"
-                  placeholder="Contact No"
-                  value={formData.contactNo}
-                  onChange={handleInputChange}
-                  required
+              <Form.Item
+                name="phone"
+                label={<p className="text-[16px] font-normal">Contact No</p>}
+              >
+                <Input
+                  style={{
+                    width: "100%",
+                    height: 48,
+                    borderRadius: "5px",
+                    color: "#919191",
+                  }}
+                  className="text-[16px] leading-5"
+                  placeholder="+9900700007"
                 />
-              </div>
-
-              <div className="form-group">
-                <label htmlFor="address">Address</label>
-                <input
-                  type="text"
-                  name="address"
-                  id="address"
-                  className="w-full rounded-sm p-2 mt-2 border"
-                  placeholder="Address"
-                  value={formData.address}
-                  onChange={handleInputChange}
-                  required
+              </Form.Item>
+              <Form.Item
+                name="address"
+                label={<p className="text-[16px] font-normal">Address</p>}
+              >
+                <Input
+                  style={{
+                    width: "100%",
+                    height: 48,
+                    borderRadius: "5px",
+                    color: "#919191",
+                  }}
+                  className="text-[16px] leading-5"
+                  placeholder="79/A Joker Vila, Gotham City"
                 />
-              </div>
+              </Form.Item>
 
-              <div className="flex justify-center">
-                <button type="submit" className="mt-2 bg-[#2F799E] px-5 py-3 rounded text-white">
-                  Save Changes
-                </button>
-              </div>
-            </div>
+              <Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  block
+                  loading={updateLoading}
+                  style={{
+                    width: 197,
+                    height: 48,
+                    color: "#FCFCFC",
+                    backgroundColor: "#020123",
+                  }}
+                  className="font-normal text-[16px] leading-6 rounded-full"
+                >
+                  Save & Changes
+                </Button>
+              </Form.Item>
+            </Form>
           </div>
-        </form>
-      ),
-    },
-    {
-      key: "2",
-      label: "Change Password",
-      content: (
-        <form onSubmit={handlePasswordSubmit}>
-          <div className="p-4">
-            <h2 className="text-xl font-semibold mb-4 text-center">Change Your Password</h2>
-            <div className="space-y-6">
-              <div className="form-group">
-                <label htmlFor="currentPassword">Current Password</label>
-                <div className="relative">
-                  <input
-                    type={passwordVisibility.currentPassword ? "text" : "password"}
-                    name="currentPassword"
-                    id="currentPassword"
-                    className="w-full rounded-sm p-2 mt-2 border"
-                    placeholder="Old Password"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => togglePasswordVisibility("currentPassword")}
-                    className="absolute right-2 top-4 text-gray-600"
-                  >
-                    {passwordVisibility.currentPassword ? "Hide" : "Show"}
-                  </button>
-                </div>
-              </div>
+        ) : (
+          <div className="max-w-[481px] mx-auto rounded-lg p-6">
+            <h1 className="text-center text-[var(--primary-color)] leading-7 text-2xl font-medium mb-7">
+              Edit Your Profile
+            </h1>
+            <Form layout="vertical" onFinish={onFinish} form={form}>
+              <Form.Item
+                name="oldPassword"
+                label={
+                  <p className="text-[#415D71] text-sm leading-5 poppins-semibold">
+                    Current Password
+                  </p>
+                }
+                rules={[
+                  {
+                    required: true,
+                    message: "Please Enter Current Password!",
+                  },
+                ]}
+              >
+                <Input.Password
+                  style={{
+                    width: "100%",
+                    height: "42px",
+                    borderRadius: "5px",
+                    color: "black",
+                    outline: "none",
+                  }}
+                  type="text"
+                  placeholder="***************"
+                />
+              </Form.Item>
 
-              <div className="form-group">
-                <label htmlFor="newPassword">New Password</label>
-                <div className="relative">
-                  <input
-                    type={passwordVisibility.newPassword ? "text" : "password"}
-                    name="newPassword"
-                    id="newPassword"
-                    className="w-full rounded-sm p-2 mt-2 border"
-                    placeholder="New Password"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => togglePasswordVisibility("newPassword")}
-                    className="absolute right-2 top-4 text-gray-600"
-                  >
-                    {passwordVisibility.newPassword ? "Hide" : "Show"}
-                  </button>
-                </div>
-              </div>
+              <Form.Item
+                name="newPassword"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please Enter New Password!",
+                  },
+                ]}
+                label={
+                  <p className="text-[#415D71] text-sm leading-5 poppins-semibold">
+                    New Password
+                  </p>
+                }
+              >
+                <Input.Password
+                  style={{
+                    width: "100%",
+                    height: "42px",
+                    borderRadius: "5px",
+                    color: "black",
+                    outline: "none",
+                  }}
+                  type="text"
+                  placeholder="************"
+                />
+              </Form.Item>
 
-              <div className="form-group">
-                <label htmlFor="confirmPassword">Confirm New Password</label>
-                <div className="relative">
-                  <input
-                    type={passwordVisibility.confirmPassword ? "text" : "password"}
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    className="w-full rounded-sm p-2 mt-2 border"
-                    placeholder="Confirm Password"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => togglePasswordVisibility("confirmPassword")}
-                    className="absolute right-2 top-4 text-gray-600"
-                  >
-                    {passwordVisibility.confirmPassword ? "Hide" : "Show"}
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex justify-center">
-                <button type="submit" className="mt-2 bg-[#2F799E] px-5 py-3 rounded text-white">
-                  Update Password
-                </button>
-              </div>
-            </div>
+              <Form.Item
+                label={
+                  <p className="text-[#415D71] text-sm leading-5 poppins-semibold">
+                    Confirm Password
+                  </p>
+                }
+                name="confirmNewPassword"
+                rules={[
+                  {
+                    required: true,
+                    message: "Please Enter Confirm Password!",
+                  },
+                ]}
+              >
+                <Input.Password
+                  style={{
+                    width: "100%",
+                    height: "42px",
+                    borderRadius: "5px",
+                    color: "black",
+                    outline: "none",
+                  }}
+                  type="text"
+                  placeholder="***************"
+                />
+              </Form.Item>
+              {passError && (
+                <p className="text-red-600 -mt-4 mb-2">{passError}</p>
+              )}
+              <Form.Item
+                style={{
+                  marginBottom: 0,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  block
+                  style={{
+                    width: 197,
+                    height: 48,
+                    color: "#FFFFFF",
+                    backgroundColor: "#020123",
+                  }}
+                  disabled={changePasswordLoading}
+                  className="font-normal text-[16px] leading-6 bg-[var(--primary-color)] rounded-full"
+                >
+                  {changePasswordLoading ? (
+                    <Spin
+                      indicator={
+                        <LoadingOutlined
+                          style={{ fontSize: 24, color: "#ffffff" }}
+                          spin
+                        />
+                      }
+                    />
+                  ) : (
+                    "Save Changes"
+                  )}
+                </Button>
+              </Form.Item>
+            </Form>
           </div>
-        </form>
-      ),
-    },
-  ];
-
-  return (
-    <div className="max-w-2xl mx-auto mt-8 rounded-lg p-6">
-      {/* Profile Picture Section */}
-      <div className="text-center mb-6">
-        <div className="relative inline-block">
-          <Avatar
-            size={140}
-            src={profilePic ? URL.createObjectURL(profilePic) : undefined}
-            className="border-4 border-gray-300 shadow-lg"
-          />
-          <Upload
-            showUploadList={false}
-            onChange={handleProfilePicUpload}
-            className="absolute bottom-0 right-0 bg-gray-100 p-2 rounded-full cursor-pointer"
-          >
-            <FaCamera className="text-gray-600 w-5 h-5" />
-          </Upload>
-        </div>
-        <p className="text-lg font-semibold mt-4">{ "Loading..."}</p>
-      </div>
-
-      {/* Custom Tabs Section */}
-      <div className="mb-4">
-        <div className="flex space-x-6 justify-center mb-4">
-        {tabItems.map((item) => (
-            <button
-              key={item.key}
-              className={`py-2 font-medium ${activeTab === item.key ? "border-b border-[#2F799E] text-[#2F799E]" : "text-gray-600 hover:text-[#02111E]"}`}
-              onClick={() => setActiveTab(item.key)}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
-        <div>{tabItems.find((item) => item.key === activeTab)?.content}</div>
+        )}
       </div>
     </div>
   );

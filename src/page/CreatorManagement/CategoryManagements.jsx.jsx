@@ -1,14 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Table, Button, Modal, Input, Upload, message } from "antd";
 import { FaArrowLeft } from "react-icons/fa";
 import { MdOutlineModeEdit } from "react-icons/md";
-import { RiDeleteBin6Line, RiGalleryFill } from "react-icons/ri";
+import { RiDeleteBin6Line } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 import { imageUrl } from "../../redux/Api/baseApi";
 import {
   useGetCategoryQuery,
   useUpdateCategoryMutation,
   useDeleteCategoryMutation,
+  usePostCategoryMutation,
 } from "../../redux/Api/categoryApi";
 
 const CategoryManagements = () => {
@@ -16,84 +17,131 @@ const CategoryManagements = () => {
   const [editModal, setEditModal] = useState({ isOpen: false, id: null });
   const [newCategory, setNewCategory] = useState("");
   const [editedCategory, setEditedCategory] = useState("");
-  const [image, setImage] = useState(null);
-  const [editedImage, setEditedImage] = useState(null);
+  const [fileList, setFileList] = useState([]);
 
-  // Fetch categories from the API
-  const { data: categoriesData, isLoading, error } = useGetCategoryQuery();
-  const [addCategory] = useUpdateCategoryMutation();
+  const {
+    data: categoriesData,
+    isLoading,
+    error,
+    refetch: refetchCategories,
+  } = useGetCategoryQuery();
+  const [addCategory] = usePostCategoryMutation();
   const [deleteCategory] = useDeleteCategoryMutation();
   const [updateCategory] = useUpdateCategoryMutation();
 
   const navigate = useNavigate();
 
-  // Add new category
   const handleAddCategory = async () => {
-    if (!newCategory || !image) {
+    if (!newCategory || fileList.length === 0) {
       alert("Please fill out all fields and upload an image.");
       return;
     }
 
     const formData = new FormData();
     formData.append("name", newCategory);
-    formData.append("category_image", image);
+    formData.append("category_image", fileList[0].originFileObj);
 
     try {
       await addCategory(formData).unwrap();
       message.success("Category added successfully!");
       setOpenAddModal(false);
       setNewCategory("");
-      setImage(null);
+      setFileList([]);
+      refetchCategories();
     } catch (err) {
       console.error("Failed to add category:", err);
       message.error("Failed to add category.");
     }
   };
 
-  // Update category
-  const handleUpdateCategory = async () => {
-    if (!editedCategory) {
-      alert("Category name cannot be empty.");
-      return;
-    }
-
+  const handleUpdateCategory = async (values) => {
+    console.log(values)
+    console.log(editedCategory)
     const formData = new FormData();
     formData.append("name", editedCategory);
-    if (editedImage) {
-      formData.append("category_image", editedImage);
+
+    if (fileList.length > 0) {
+      // Check if the user uploaded a new image
+      if (fileList[0].originFileObj) {
+        formData.append("category_image", fileList[0].originFileObj);
+      } else if (fileList[0].url) {
+        // Use the existing image URL
+        formData.append("category_image", fileList[0].url.replace(imageUrl, ""));
+      }
     }
 
+
     try {
-      await updateCategory({ id: editModal.id, body: formData }).unwrap();
+      const response = await updateCategory({
+      
+        categoryId: editModal.id,
+        data: formData,
+      }).unwrap();
+
+      
       message.success("Category updated successfully!");
       setEditModal({ isOpen: false, id: null });
       setEditedCategory("");
-      setEditedImage(null);
+      setFileList([]);
+      refetchCategories();
     } catch (err) {
       console.error("Failed to update category:", err);
       message.error("Failed to update category.");
     }
   };
 
-  // Delete category
   const handleDeleteCategory = async (id) => {
     try {
       await deleteCategory(id).unwrap();
       message.success("Category deleted successfully!");
+      refetchCategories();
     } catch (err) {
       console.error("Failed to delete category:", err);
       message.error("Failed to delete category.");
     }
   };
 
-  // Open edit modal with default values
   const handleOpenEditModal = (record) => {
     setEditModal({ isOpen: true, id: record._id });
-    setEditedCategory(record.name); // Prepopulate the category name
-    setEditedImage(null); // Reset image to avoid prepopulating
+    setEditedCategory(record.name);
+    const existingImage = record.category_image
+      ? [
+          {
+            uid: "-1",
+            name: "Existing Image",
+            status: "done",
+            url: `${imageUrl}/${record.category_image}`,
+          },
+        ]
+      : [];
+    setFileList(existingImage);
   };
 
-  // Table columns definition
+  const handleCloseEditModal = () => {
+    setEditModal({ isOpen: false, id: null });
+    setEditedCategory("");
+    setFileList([]);
+  };
+
+  const onChange = ({ fileList: newFileList }) => {
+    setFileList(newFileList);
+  };
+
+  const onPreview = async (file) => {
+    let src = file.url;
+    if (!src) {
+      src = await new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file.originFileObj);
+        reader.onload = () => resolve(reader.result);
+      });
+    }
+    const image = new Image();
+    image.src = src;
+    const imgWindow = window.open(src);
+    imgWindow?.document.write(image.outerHTML);
+  };
+
   const columns = [
     {
       title: "SL no.",
@@ -115,7 +163,7 @@ const CategoryManagements = () => {
         <div className="flex justify-center">
           <img
             className="w-16 h-16 object-cover rounded"
-            src={`${imageUrl}/${record.category_image}`}
+            src={`${imageUrl}/${record.category_image}?t=${Date.now()}`}
             alt={record.name}
           />
         </div>
@@ -152,7 +200,9 @@ const CategoryManagements = () => {
       </h1>
 
       <div className="flex justify-between mt-9">
-        <button className="bg-[#2F799E] text-white px-6 py-1 rounded">Category</button>
+        <button className="bg-[#2F799E] text-white px-6 py-1 rounded">
+          Category
+        </button>
         <button
           onClick={() => setOpenAddModal(true)}
           className="bg-[#2F799E] px-3 text-white rounded"
@@ -184,7 +234,7 @@ const CategoryManagements = () => {
         onCancel={() => {
           setOpenAddModal(false);
           setNewCategory("");
-          setImage(null);
+          setFileList([]);
         }}
         footer={null}
         width={600}
@@ -201,28 +251,13 @@ const CategoryManagements = () => {
             <div>
               <p className="mt-4 mb-2">Thumbs Image</p>
               <Upload
-                showUploadList={false}
-                beforeUpload={(file) => {
-                  setImage(file);
-                  return false;
-                }}
+                listType="picture-card"
+                fileList={fileList}
+                onChange={onChange}
+                onPreview={onPreview}
+                beforeUpload={() => false} // Prevent automatic upload
               >
-                <div className="border-2 border-dashed border-neutral-400 rounded h-[124px] flex flex-col items-center justify-center relative">
-                  {image ? (
-                    <img
-                      src={URL.createObjectURL(image)}
-                      alt="Uploaded"
-                      className="object-contain w-full h-full"
-                    />
-                  ) : (
-                    <>
-                      <p className="text-gray-600">Drop image file here to upload</p>
-                      <p className="text-4xl text-gray-600 mt-5">
-                        <RiGalleryFill />
-                      </p>
-                    </>
-                  )}
-                </div>
+                {fileList.length < 1 && "+ Upload"}
               </Upload>
             </div>
             <div className="w-full flex gap-3 mt-11">
@@ -236,7 +271,7 @@ const CategoryManagements = () => {
                 onClick={() => {
                   setOpenAddModal(false);
                   setNewCategory("");
-                  setImage(null);
+                  setFileList([]);
                 }}
                 className="bg-[#D9000A] w-full rounded py-2 px-4 text-white"
               >
@@ -251,7 +286,7 @@ const CategoryManagements = () => {
       <Modal
         centered
         open={editModal.isOpen}
-        onCancel={() => setEditModal({ isOpen: false, id: null })}
+        onCancel={handleCloseEditModal}
         footer={null}
         width={600}
       >
@@ -267,28 +302,18 @@ const CategoryManagements = () => {
             <div>
               <p className="mt-4 mb-2">Thumbs Image</p>
               <Upload
-                showUploadList={false}
-                beforeUpload={(file) => {
-                  setEditedImage(file);
-                  return false;
-                }}
+                listType="picture-card"
+                fileList={fileList}
+                onChange={onChange}
+                onPreview={onPreview}
+                beforeUpload={() => false} // Prevent automatic upload
               >
-                <div className="border-2 border-dashed border-neutral-400 rounded h-[124px] flex flex-col items-center justify-center relative">
-                  {editedImage ? (
-                    <img
-                      src={URL.createObjectURL(editedImage)}
-                      alt="Uploaded"
-                      className="object-contain w-full h-full"
-                    />
-                  ) : (
-                    <p className="text-gray-600">(Optional) Upload new image</p>
-                  )}
-                </div>
+                {fileList.length < 1 && "+ Upload"}
               </Upload>
             </div>
             <div className="w-full flex gap-3 mt-6">
               <button
-                onClick={() => setEditModal({ isOpen: false, id: null })}
+                onClick={handleCloseEditModal}
                 className="bg-[#D9000A] w-full rounded py-2 px-4 text-white"
               >
                 Cancel
