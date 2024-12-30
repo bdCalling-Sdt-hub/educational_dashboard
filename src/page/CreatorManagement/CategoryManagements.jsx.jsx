@@ -54,31 +54,29 @@ const CategoryManagements = () => {
     }
   };
 
-  const handleUpdateCategory = async (values) => {
-    console.log(values)
-    console.log(editedCategory)
+  const handleUpdateCategory = async () => {
+    if (!editedCategory) {
+      message.error("Category name cannot be empty.");
+      return;
+    }
+  
     const formData = new FormData();
     formData.append("name", editedCategory);
-
+  
+    // Handle image
     if (fileList.length > 0) {
-      // Check if the user uploaded a new image
       if (fileList[0].originFileObj) {
-        formData.append("category_image", fileList[0].originFileObj);
+        formData.append("category_image", fileList[0].originFileObj); // New image
       } else if (fileList[0].url) {
-        // Use the existing image URL
-        formData.append("category_image", fileList[0].url.replace(imageUrl, ""));
+        formData.append("existingImageUrl", fileList[0].url.replace(imageUrl, "")); // Existing image URL
       }
     }
-
-
+  
     try {
       const response = await updateCategory({
-      
         categoryId: editModal.id,
         data: formData,
       }).unwrap();
-
-      
       message.success("Category updated successfully!");
       setEditModal({ isOpen: false, id: null });
       setEditedCategory("");
@@ -122,7 +120,7 @@ const CategoryManagements = () => {
     setEditedCategory("");
     setFileList([]);
   };
-
+  
   const onChange = ({ fileList: newFileList }) => {
     setFileList(newFileList);
   };
@@ -333,3 +331,4 @@ const CategoryManagements = () => {
 };
 
 export default CategoryManagements;
+//dfdsfsdfsdfds
