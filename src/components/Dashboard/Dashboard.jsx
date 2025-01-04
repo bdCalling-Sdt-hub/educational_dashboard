@@ -57,8 +57,8 @@ const { data: videoData } = useGetshortVideosQuery({sort});
 
   const totalStats = {
     totalUser: chartData?.data?.reduce((acc, item) => acc + item.totalUser, 0),
-    totalVideo: 120, // Replace with actual API when available
-    totalArticle: 50, // Replace with actual API when available
+    totalVideo: 120, 
+    totalArticle: 50, 
   };
 
   const dataa = [
