@@ -30,7 +30,7 @@ const AboutUs = () => {
     readonly: false,
     placeholder: "Start typings...",
     style: {
-      height: 400,
+      height: 900,
     },
     buttons: [
       "image",

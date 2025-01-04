@@ -65,7 +65,7 @@ export const router = createBrowserRouter([
         element: <Videos></Videos>
       },
       {
-        path: "/dashboard/videos/videodetails",
+        path: "/dashboard/videos/videodetails/:id",
         element: <VideDetailsPage></VideDetailsPage>
       },
       {

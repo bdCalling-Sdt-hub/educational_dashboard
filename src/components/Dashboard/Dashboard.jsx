@@ -22,11 +22,21 @@ import { useGetUserManageQuery } from "../../redux/Api/UserManagementApi";
 import { Space, Table } from "antd";
 import { FaArrowRight } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { useGetshortVideosQuery } from "../../redux/Api/videoApi";
+import { imageUrl } from "../../redux/Api/baseApi";
 const Dashboard = () => {
   const { data: totalArticle } = useGetTotalArticleQuery();
   const [selectedYear, setSelectedYear] = useState("2024");
 const {data: chartData} = useGetChartQuery(selectedYear);
 console.log(chartData)
+
+const [sort, setSort] = useState("-totalView");
+const { data: videoData } = useGetshortVideosQuery({sort});
+  const videos = videoData?.data?.result || [];
+  const handleSortChange = (e) => {
+    setSort(e.target.value);
+  };
+
   const topPodcasts = [
     { id: 1, eventName: "Classics Music", total: 84, image: dash },
     { id: 2, eventName: "Modern Beats", total: 67, image: dash },
@@ -216,14 +226,14 @@ console.log(chartData)
                     </tr>
                   </thead>
                   <tbody>
-                    {topPodcasts.map((podcast, index) => (
-                      <tr key={podcast.id}>
+                    {videos.slice(0,7).map((video, index) => (
+                      <tr key={video._id}>
                         <td className="px-4 py-2">{index + 1}</td>
-                        <td className="px-4 py-2 flex gap-2">
-                          <img src={podcast.image} alt={podcast.eventName} />
-                          <span className="mt-2">{podcast.eventName}</span>
-                        </td>
-                        <td className="px-4 py-2">{podcast.total}</td>
+                        <Link to={`/dashboard/videos/videodetails/${video._id}`}><td className="px-4 py-2 flex gap-2">
+                          <img className="w-[50px] h-[50px] rounded-lg" src={`${imageUrl}/${video.thumbnail_image}`} alt={video.title} />
+                          <span className="mt-2">{video.title}</span>
+                        </td> </Link>
+                        <td className="px-4 py-2">{video.totalView} </td>
                       </tr>
                     ))}
                   </tbody>
