@@ -48,7 +48,7 @@ const { data: videoData } = useGetshortVideosQuery({sort});
     { id: 8, eventName: "Hip-Hop Essentials", total: 30, image: dash },
   ];
 
-    // Transform data for Recharts
+    // Transform data for Rechart
     const transformedData =
     chartData?.data?.map((item) => ({
       month: item.month,
