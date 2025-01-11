@@ -1,67 +1,74 @@
 import React, { useState } from "react";
 import { FaArrowLeft, FaTrashAlt } from "react-icons/fa";
-import { Input, Modal, Form } from "antd";
+import { Input, Modal, Form, Button, message } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import { IoArrowUndoSharp } from "react-icons/io5";
 import { useNavigate } from "react-router-dom";
 import TextArea from "antd/es/input/TextArea";
-import { useDeleteFeedbackMutation, useGetFeedbackQuery, useUpdateFeedbackMutation } from "../../redux/Api/feedbackApi";
-import { toast } from "sonner";
+import {
+  useDeleteFeedbackMutation,
+  useGetFeedbackQuery,
+  useUpdateFeedbackMutation,
+} from "../../redux/Api/feedbackApi";
 import Loading from "../../loading/Loading";
 
 const FeedBack = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedFeedback, setSelectedFeedback] = useState(null);
   const [replyMessage, setReplyMessage] = useState("");
+  const [isSending, setIsSending] = useState(false); // Loading state for the button
+
   const navigate = useNavigate();
 
   const { data, isLoading, error } = useGetFeedbackQuery();
   const [updateFeedback] = useUpdateFeedbackMutation();
+  const [deleteFeedback] = useDeleteFeedbackMutation();
 
   const feedbackData = data?.data?.result || [];
- const [deletFeedback] = useDeleteFeedbackMutation()
+
   const openEditModal = (feedback) => {
     setSelectedFeedback(feedback);
-    setReplyMessage(feedback.replyMessage || ""); 
+    setReplyMessage(feedback.replyMessage || "");
     setIsEditModalOpen(true);
   };
 
   const closeEditModal = () => {
     setIsEditModalOpen(false);
-    setSelectedFeedback(null); 
-    setReplyMessage(""); 
+    setSelectedFeedback(null);
+    setReplyMessage("");
   };
 
   const handleReplySubmit = async () => {
     if (selectedFeedback) {
+      setIsSending(true); // Set loading state to true
       try {
-        const res = await updateFeedback({
+        await updateFeedback({
           id: selectedFeedback._id,
           replyMessage,
         }).unwrap();
-        console.log("Reply updated successfully:", res);
+        message.success("Reply updated successfully");
         closeEditModal();
       } catch (error) {
-        console.error("Error updating reply:", error);
+        message.error("Error updating reply");
+      } finally {
+        setIsSending(false); // Set loading state to false
       }
     }
   };
 
   const handleDelete = (feedback) => {
-    console.log(feedback)
-    deletFeedback(feedback._id)
+    deleteFeedback(feedback._id)
       .unwrap()
       .then(() => {
-        refetch();
-        toast.success("FAQ Delete successfully!");
+        message.success("Feedback deleted successfully!");
       })
-      .catch((error) => {
-        toast.error('Error deleting FAQ:', error);
+      .catch(() => {
+        message.error("Error deleting feedback");
       });
   };
 
   if (isLoading) {
-    return <Loading></Loading>;
+    return <Loading />;
   }
 
   if (error) {
@@ -70,7 +77,6 @@ const FeedBack = () => {
 
   return (
     <div>
-     
       <div className="flex justify-between mb-7 mt-4">
         <h1 className="flex gap-4 text-[#2F799E]">
           <button className="-mt-[20px]" onClick={() => navigate(-1)}>
@@ -117,7 +123,10 @@ const FeedBack = () => {
                       {feedback.replyMessage ? "Replied" : "Pending"}
                     </span>
                   </span>
-                  <button  onClick={() => handleDelete(feedback)} className="text-[#6A6D7C] ml-4">
+                  <button
+                    onClick={() => handleDelete(feedback)}
+                    className="text-[#6A6D7C] ml-4"
+                  >
                     <FaTrashAlt />
                   </button>
                 </td>
@@ -128,12 +137,7 @@ const FeedBack = () => {
       </div>
 
       {/* Modal Section */}
-      <Modal
-        centered
-        open={isEditModalOpen}
-        footer={null}
-        onCancel={closeEditModal}
-      >
+      <Modal centered open={isEditModalOpen} footer={null} onCancel={closeEditModal}>
         <p className="text-center font-semibold pb-5 text-xl">Feedback</p>
         <Form>
           <label htmlFor="">Description : </label>
@@ -158,13 +162,15 @@ const FeedBack = () => {
             />
           </Form.Item>
           <div className="flex items-center justify-center mt-2">
-            <button
-              type="button"
-              className="flex w-full items-center justify-center gap-2 bg-black text-white px-10 py-2 text-xl rounded-3xl"
+            <Button
+              type="primary"
+              className="w-full"
               onClick={handleReplySubmit}
+              loading={isSending}
+              style={{ background: "black", borderColor: "#2F799E" }} // Ant Design loading state
             >
               Send
-            </button>
+            </Button>
           </div>
         </Form>
       </Modal>

@@ -27,6 +27,8 @@ import ContusctUs from "../page/Settings/ContusctUs.jsx";
 import FeedBack from "../page/Settings/FeedBack.jsx";
 import PartnerLaw from "../page/Settings/PartnerLaw/PartnerLaw.jsx";
 import AboutUs from "../page/Settings/AboutUs.jsx";
+import ProtectedRoute from "../protectedRoute/ProtectedRoute.jsx";
+
 
 
 export const router = createBrowserRouter([
@@ -34,7 +36,7 @@ export const router = createBrowserRouter([
     path: "/",
     element: (
      
-        <DashboardLayout></DashboardLayout>
+        <ProtectedRoute><DashboardLayout></DashboardLayout></ProtectedRoute>
       
     ),
     children: [

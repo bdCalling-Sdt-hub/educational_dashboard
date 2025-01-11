@@ -1,39 +1,75 @@
-import { useEffect, useState } from "react";
-import UseAxios from "../hook/UseAxios";
-import { Navigate } from "react-router-dom";
 
-const ProtectedRoute = () => {
-  const request = UseAxios();
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState(null);
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const res = await request.get("/dashboard/admin", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        setUser(res?.data?.data?.auth);
-      } catch (error) {
-        console.log("err", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
-  }, []);
-  if (!localStorage.getItem("token")) {
-    return <Navigate to={`/login`}></Navigate>;
+// import { Navigate, useLocation } from "react-router-dom";
+// import { useGetAdminQuery } from "../redux/Api/AdminApi";
+// import { Skeleton } from "antd";
+
+// const ProtectedRoute = ({children}) => {
+//   const location = useLocation();
+//   const accessToken = localStorage.getItem("accessToken"); // Check accessToken from storage
+
+//   if (!accessToken) {
+//     return <Navigate to={"/login"} state={{ from: location }} />;
+//   }
+//   const { data: getUserInfo, isLoading: adminLoading } = useGetAdminQuery();
+
+//   if (isLoading || isFetching) {
+//     return (
+//       <div className="flex items-center justify-center">
+//         <Skeleton active />
+//       </div>
+//     );
+//   }
+
+//   if (isError || !getUserInfo?.data?.length) {
+//     return <Navigate to={"/login"} state={{ from: location }} />;
+//   }
+
+//   const admin = getUserInfo.data.find((users) => users.user.role === "superAdmin");
+
+//     return <Navigate to={"/login"} state={{ from: location }} />;
+//   }
+
+//   return children;
+// };
+
+// export default ProtectedRoute;
+
+
+import React from "react";
+import { Navigate, useLocation } from "react-router-dom";
+import { Skeleton } from "antd";
+import { useGetAdminQuery } from "../redux/Api/AdminApi";
+
+const ProtectedRoute = ({ children }) => {
+  const location = useLocation();
+  const accessToken = localStorage.getItem("accessToken");
+
+  if (!accessToken) {
+    return <Navigate to={"/login"} state={{ from: location }} />;
   }
-  if (loading) {
-    return <p>loading...</p>;
+
+  const { data: getUserInfo, isError, isLoading, isFetching } = useGetAdminQuery();
+
+  if (isLoading || isFetching) {
+    return (
+      <div className="flex items-center justify-center">
+        <Skeleton active />
+      </div>
+    );
   }
-  if (user?.role === "ADMIN") {
-    return children;
+
+  if (isError || !getUserInfo?.data) {
+    return <Navigate to={"/login"} state={{ from: location }} />;
   }
-  return <Navigate to={`/login`}></Navigate>;
+
+  const admin = getUserInfo?.data;
+
+  if (!admin || admin.user.role !== "superAdmin") {
+    return <Navigate to={"/login"} state={{ from: location }} />;
+  }
+
+  return children;
 };
 
 export default ProtectedRoute;
+

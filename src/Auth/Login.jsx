@@ -1,5 +1,5 @@
 import login from "../assets/auth/login.png";
-import { Checkbox, Form, Input } from "antd";
+import { Checkbox, Form, Input, message } from "antd";
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import Swal from "sweetalert2";
@@ -31,7 +31,7 @@ const Login = () => {
               "accessToken",
               JSON.stringify(payload?.data?.accessToken)
             );
-            alert('sucess')
+            message.success('Login Successfully')
             return navigate("/");
           }
           

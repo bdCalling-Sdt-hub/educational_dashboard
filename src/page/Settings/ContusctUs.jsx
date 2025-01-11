@@ -11,6 +11,7 @@ import {
   useUpdateTermsConditionMutation,
 } from "../../redux/Api/privecyApi";
 import toast from "react-hot-toast";
+import { Button } from "antd";
 
 const ContusctUs = () => {
   const { data: getTerms } = useGetContuctQuery();
@@ -23,7 +24,9 @@ const ContusctUs = () => {
 
   const handleTerms = async () => {
     const description = content;  
+    seLoading(true);
     const res = await addPrivecy({ description }).unwrap();
+    seLoading(false);
     console.log("res", res);
     toast.success("Privecy Update successfully!");
   };
@@ -70,12 +73,13 @@ const ContusctUs = () => {
           onChange={(newContent) => {}}
         />
         <div className="flex items-center justify-center mt-5">
-          <button
+          <Button
             onClick={handleTerms}
             className="bg-black text-white px-4 py-2 rounded-full test"
+            loading={isLoading}
           >
             Save Changes
-          </button>
+          </Button>
         </div>
       </div>
     </>
