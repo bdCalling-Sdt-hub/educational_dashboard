@@ -17,6 +17,7 @@ import logo from "../../assets/header/logo.png";
 import { FaChevronRight } from "react-icons/fa";
 
 import { IoIosLogIn } from "react-icons/io";
+import { useGetAdminQuery } from "../../redux/Api/AdminApi";
 
 const items = [
   {
@@ -101,6 +102,7 @@ const items = [
 ];
 
 const Header = () => {
+  const { data: adminData, isLoading: adminLoading } = useGetAdminQuery();
   const [selectedKey, setSelectedKey] = useState("dashboard");
   const [expandedKeys, setExpandedKeys] = useState([]);
   const navigate = useNavigate();
@@ -134,6 +136,7 @@ const Header = () => {
     localStorage.removeItem("token");
     navigate("/login");
   };
+  const admin = adminData?.data;
   return (
     <div className="bg-[#2F799E] text-white pt-5">
       <div className="flex justify-between">
@@ -279,7 +282,9 @@ const Header = () => {
                 />
               </div>
               <div className="text-end">
-                <h3>{"Loading..."}</h3>
+                <h3><p className="text-[#ffffff] text-[20px] leading-[32px] font-semibold">
+              {admin?.name || "A"}
+            </p></h3>
                 <h4 className="text-sm">Admin</h4>
               </div>
             </div>

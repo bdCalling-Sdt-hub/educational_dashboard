@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Table, Button, Modal, Input, Upload, message } from "antd";
+import React, { useState } from "react";
+import { Table, Button, Modal, Input, Upload, message, Spin } from "antd";
 import { FaArrowLeft } from "react-icons/fa";
 import { MdOutlineModeEdit } from "react-icons/md";
 import { RiDeleteBin6Line } from "react-icons/ri";
@@ -18,6 +18,7 @@ const CategoryManagements = () => {
   const [newCategory, setNewCategory] = useState("");
   const [editedCategory, setEditedCategory] = useState("");
   const [fileList, setFileList] = useState([]);
+  const [loading, setLoading] = useState(false); // Loading state for buttons
 
   const {
     data: categoriesData,
@@ -25,6 +26,7 @@ const CategoryManagements = () => {
     error,
     refetch: refetchCategories,
   } = useGetCategoryQuery();
+  console.log(categoriesData)
   const [addCategory] = usePostCategoryMutation();
   const [deleteCategory] = useDeleteCategoryMutation();
   const [updateCategory] = useUpdateCategoryMutation();
@@ -33,7 +35,7 @@ const CategoryManagements = () => {
 
   const handleAddCategory = async () => {
     if (!newCategory || fileList.length === 0) {
-      alert("Please fill out all fields and upload an image.");
+      message.error("Please fill out all fields and upload an image.");
       return;
     }
 
@@ -41,16 +43,18 @@ const CategoryManagements = () => {
     formData.append("name", newCategory);
     formData.append("category_image", fileList[0].originFileObj);
 
+    setLoading(true);
     try {
-      await addCategory(formData).unwrap();
-      message.success("Category added successfully!");
+      const res = await addCategory(formData).unwrap();
+      message.success(res?.message || "Category added successfully!");
       setOpenAddModal(false);
       setNewCategory("");
       setFileList([]);
       refetchCategories();
     } catch (err) {
-      console.error("Failed to add category:", err);
-      message.error("Failed to add category.");
+      message.error(err?.data?.message || "Failed to add category.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -63,39 +67,46 @@ const CategoryManagements = () => {
     const formData = new FormData();
     formData.append("name", editedCategory);
   
-    // Handle image
-    if (fileList.length > 0) {
-      if (fileList[0].originFileObj) {
-        formData.append("category_image", fileList[0].originFileObj); // New image
-      } else if (fileList[0].url) {
-        formData.append("existingImageUrl", fileList[0].url.replace(imageUrl, "")); // Existing image URL
-      }
-    }
+    // if (fileList.length > 0) {
+    //   if (fileList[0].originFileObj) {
+    //     formData.append("category_image", fileList[0].originFileObj);
+    //   } else if (fileList[0].url) {
+    //     formData.append("existingImageUrl", fileList[0].url.replace(imageUrl, ""));
+    //   }
+    // }
+    formData.append("category_image", fileList[0].originFileObj);
   
+    console.log(fileList)
+    setLoading(true);
     try {
-      const response = await updateCategory({
+      const res = await updateCategory({
         categoryId: editModal.id,
         data: formData,
       }).unwrap();
-      message.success("Category updated successfully!");
+      console.log("Response:", res); 
+      message.success(res?.message || "Category updated successfully!");
       setEditModal({ isOpen: false, id: null });
       setEditedCategory("");
       setFileList([]);
       refetchCategories();
     } catch (err) {
-      console.error("Failed to update category:", err);
-      message.error("Failed to update category.");
+      console.error("Update Error:", err); // Debug error
+      message.error(err?.data?.message || "Failed to update category.");
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleDeleteCategory = async (id) => {
+    setLoading(true);
     try {
-      await deleteCategory(id).unwrap();
-      message.success("Category deleted successfully!");
+      const res = await deleteCategory(id).unwrap();
+      message.success(res?.message || "Category deleted successfully!");
       refetchCategories();
     } catch (err) {
-      console.error("Failed to delete category:", err);
-      message.error("Failed to delete category.");
+      message.error(err?.data?.message || "Failed to delete category.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -120,7 +131,7 @@ const CategoryManagements = () => {
     setEditedCategory("");
     setFileList([]);
   };
-  
+
   const onChange = ({ fileList: newFileList }) => {
     setFileList(newFileList);
   };
@@ -182,6 +193,7 @@ const CategoryManagements = () => {
             icon={<RiDeleteBin6Line />}
             style={{ backgroundColor: "#FF5454", color: "#fff" }}
             onClick={() => handleDeleteCategory(record._id)}
+           
           />
         </div>
       ),
@@ -202,6 +214,7 @@ const CategoryManagements = () => {
           Category
         </button>
         <button
+          type="primary"
           onClick={() => setOpenAddModal(true)}
           className="bg-[#2F799E] px-3 text-white rounded"
         >
@@ -211,7 +224,7 @@ const CategoryManagements = () => {
 
       <div className="mt-16">
         {isLoading ? (
-          <p>Loading categories...</p>
+          <Spin tip="Loading categories..." />
         ) : error ? (
           <p>Failed to load categories.</p>
         ) : (
@@ -259,22 +272,27 @@ const CategoryManagements = () => {
               </Upload>
             </div>
             <div className="w-full flex gap-3 mt-11">
-              <button
-                onClick={handleAddCategory}
-                className="bg-[#2F799E] w-full py-2 px-4 rounded text-white"
-              >
-                Save
-              </button>
-              <button
+            <Button
+                type="default"
                 onClick={() => {
                   setOpenAddModal(false);
                   setNewCategory("");
                   setFileList([]);
                 }}
-                className="bg-[#D9000A] w-full rounded py-2 px-4 text-white"
+                className="bg-[#D9000A] text-white w-full"
               >
                 Cancel
-              </button>
+              </Button>
+              <Button
+                type="primary"
+                onClick={handleAddCategory}
+                loading={loading} // Add loading state for the Save button
+                className="w-full"
+                style={{ background: "#2F799E", borderColor: "#2F799E" }}
+              >
+                Save
+              </Button>
+              
             </div>
           </div>
         </div>
@@ -310,18 +328,23 @@ const CategoryManagements = () => {
               </Upload>
             </div>
             <div className="w-full flex gap-3 mt-6">
+            
               <button
+                type="default"
                 onClick={handleCloseEditModal}
-                className="bg-[#D9000A] w-full rounded py-2 px-4 text-white"
+                className="bg-[#D9000A] text-white w-full rounded-md"
               >
                 Cancel
               </button>
-              <button
+              <Button
+                type="primary"
                 onClick={handleUpdateCategory}
-                className="bg-[#2F799E] w-full py-2 px-4 rounded text-white"
+                loading={loading} // Add loading state for the Save button
+                className="w-full "
+                style={{ background: "#2F799E", borderColor: "#2F799E" }}
               >
                 Save
-              </button>
+              </Button>
             </div>
           </div>
         </div>

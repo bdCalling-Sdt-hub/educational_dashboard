@@ -22,6 +22,7 @@ const [deletVideo] =  useDeleteVideosMutation();
 const {data:singleVideo} = useGetSingleVideosQuery();
 
 const handleDelete = async (id) => {
+  console.log(id)
   try {
     await deletVideo(id).unwrap();
     toast.success("Video deleted successfully!");

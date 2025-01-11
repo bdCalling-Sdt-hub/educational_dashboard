@@ -29,7 +29,7 @@ const article = baseApi.injectEndpoints({
           body: formData,
         };
       },
-      providesTags: ["article"],
+      invalidatesTags: ["article"],
     }),
 
     deleteArticle: builder.mutation({

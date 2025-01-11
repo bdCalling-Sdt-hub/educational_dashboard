@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom";
 import TextArea from "antd/es/input/TextArea";
 import { useDeleteFeedbackMutation, useGetFeedbackQuery, useUpdateFeedbackMutation } from "../../redux/Api/feedbackApi";
 import { toast } from "sonner";
+import Loading from "../../loading/Loading";
 
 const FeedBack = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -60,7 +61,7 @@ const FeedBack = () => {
   };
 
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Loading></Loading>;
   }
 
   if (error) {

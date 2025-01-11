@@ -1,17 +1,12 @@
-import { Form, Input, Modal, Upload } from "antd";
+import { Form, Input, message, Modal, Select, Upload, Button } from "antd";
 import React, { useState, useEffect, useRef } from "react";
-import Button from "./Button";
 import { PlusOutlined } from "@ant-design/icons";
-import { toast } from "sonner";
-
 import JoditEditor from "jodit-react";
 import { useUpdateArticleMutation } from "../../redux/Api/articleApi";
 import { imageUrl } from "../../redux/Api/baseApi";
 
 const UpdateAuctionModal = ({ isModalOpen, setIsModalOpen, singleArticle }) => {
-  console.log("single articel", singleArticle);
   const [fileList, setFileList] = useState([]);
-  console.log("file list,", fileList);
   const editor = useRef(null);
   const [content, setContent] = useState("");
   const [updateArticle, { isLoading: isUpdating }] = useUpdateArticleMutation();
@@ -27,12 +22,8 @@ const UpdateAuctionModal = ({ isModalOpen, setIsModalOpen, singleArticle }) => {
 
   const onFinish = async (values) => {
     const id = singleArticle?._id;
-    const data = {
-      ...values,
-      
-    };
+    const data = { ...values };
 
-  
     const existingImages = fileList
       .filter((file) => file.url)
       .map((file) => file.url.replace(imageUrl, ""));
@@ -51,32 +42,29 @@ const UpdateAuctionModal = ({ isModalOpen, setIsModalOpen, singleArticle }) => {
       formData.append("article_images", file.originFileObj);
     });
 
- 
-    for (let pair of formData.entries()) {
-      console.log(`${pair[0]}: ${pair[1]}`);
-    }
-
     try {
       const res = await updateArticle({ formData, id }).unwrap();
-      console.log("res", res);
-      toast.success(res?.message);
+      message.success(res?.message);
       setIsModalOpen(false);
       form.resetFields();
       setFileList([]);
     } catch (error) {
-      toast.error(error?.data?.message);
+      message.error(error?.data?.message);
     }
   };
 
-  
   useEffect(() => {
     if (singleArticle) {
       form.setFieldsValue({
         title: singleArticle?.title,
         description: singleArticle?.description,
+        category: singleArticle?.category || undefined,
       });
 
-      if (singleArticle.article_images && singleArticle.article_images.length > 0) {
+      if (
+        singleArticle.article_images &&
+        singleArticle.article_images.length > 0
+      ) {
         const images = singleArticle?.article_images?.map((url, index) => ({
           uid: index,
           name: `image-${index}.png`,
@@ -87,13 +75,11 @@ const UpdateAuctionModal = ({ isModalOpen, setIsModalOpen, singleArticle }) => {
       }
     }
   }, [singleArticle, form]);
-  
+
   const config = {
     readonly: false,
     placeholder: "Write description here...",
-    style: {
-      height: "15vh",
-    },
+    style: { height: "20vh" },
     buttons: [
       "image",
       "fontsize",
@@ -115,8 +101,13 @@ const UpdateAuctionModal = ({ isModalOpen, setIsModalOpen, singleArticle }) => {
       width={800}
       onCancel={() => {
         setIsModalOpen(false);
-        form.resetFields();
-       
+        if (singleArticle) {
+          form.setFieldsValue({
+            title: singleArticle?.title,
+            description: singleArticle?.description,
+            category: singleArticle?.category || undefined,
+          });
+        }
       }}
     >
       <h1 className="text-center font-medium text-[20px]">Update Article</h1>
@@ -132,7 +123,7 @@ const UpdateAuctionModal = ({ isModalOpen, setIsModalOpen, singleArticle }) => {
             <Input />
           </Form.Item>
           <Form.Item label="Category" name="category" className="w-full">
-            {/* Category dropdown or input can go here */}
+            <Select placeholder="Select Category" />
           </Form.Item>
         </div>
 
@@ -168,18 +159,34 @@ const UpdateAuctionModal = ({ isModalOpen, setIsModalOpen, singleArticle }) => {
           </Upload>
         </Form.Item>
 
-        <div className="flex justify-between gap-3">
-          <Form.Item className="w-full">
-            <Button className="w-full">Save</Button>
-          </Form.Item>
+        <div className="flex gap-3">
           <Form.Item className="w-full">
             <button
-              type="button"
-              className="bg-[#d9000a] text-white w-full p-1 rounded-md"
-              onClick={() => setIsModalOpen(false)}
+              type="default"
+              onClick={() => {
+                setIsModalOpen(false);
+                if (singleArticle) {
+                  form.setFieldsValue({
+                    title: singleArticle?.title,
+                    description: singleArticle?.description,
+                    category: singleArticle?.category || undefined,
+                  });
+                }
+              }}
+              className="bg-[#d9000a] text-white w-full rounded-md py-[5px]"
             >
               Cancel
             </button>
+          </Form.Item>
+          <Form.Item className="w-full">
+            <Button
+              type="primary"
+              htmlType="submit"
+              loading={isUpdating} // Add loading spinner
+              className="w-full bg-[#2F799E] text-white "
+            >
+              Save
+            </Button>
           </Form.Item>
         </div>
       </Form>

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Button, Form, Input, Spin } from "antd";
+import { Button, Form, Input, message, Spin } from "antd";
 import { CiEdit } from "react-icons/ci";
 
 import { IoCameraOutline } from "react-icons/io5";
@@ -10,6 +10,7 @@ import { imageUrl } from "../../redux/Api/baseApi";
 import { useGetAdminQuery, useUpdateProfileeMutation } from "../../redux/Api/AdminApi";
 import { toast } from "sonner";
 import { useChangePasswordMutation } from "../../redux/Api/userApi";
+import Loading from "../../loading/Loading";
 const admin = false;
 
 
@@ -88,16 +89,16 @@ const Profile = () => {
     updateProfile(data)
       .unwrap()
       .then(() => {
-        toast.success("Profile updated successfully");
+        message.success("Profile updated successfully");
         // Redirect after success
       })
       .catch((error) => {
-        toast.error("Error updating profile:", error);
+        message.error( "Failed to add category.", error);
       });
   };
 
   if (adminLoading) {
-    return <Spin size="large" />;
+    return <Loading></Loading>;
   }
 
   const admin = adminData?.data;
@@ -147,7 +148,7 @@ const Profile = () => {
             )}
           </div>
           <div className="w-fit">
-            <p className="text-[#575757] text-[24px] leading-[32px] font-semibold">
+            <p className="text-[#000000] text-[24px] leading-[32px] font-semibold">
               {admin?.name || "A"}
             </p>
           </div>

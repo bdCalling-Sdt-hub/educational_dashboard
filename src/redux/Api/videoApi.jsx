@@ -44,7 +44,7 @@ const videos = baseApi.injectEndpoints({
           body: formData,
         };
       },
-      providesTags: ["videos"],
+      invalidatesTags: ["videos"],
     }),
 
     deleteVideos: builder.mutation({

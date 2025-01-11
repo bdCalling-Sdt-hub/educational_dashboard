@@ -1,4 +1,4 @@
-import { Modal, Form, Input, Button, Select, Upload } from "antd";
+import { Modal, Form, Input, Button, Select, Upload, message } from "antd";
 import React, { useRef, useState } from "react";
 import ImgCrop from "antd-img-crop";
 import { usePostArticleMutation } from "../../redux/Api/articleApi";
@@ -9,14 +9,17 @@ const AddArticleModal = ({ setOpenAddModal, openAddModal }) => {
   const [content, setContent] = useState(""); // Content for the article
   const [addArticle, { isLoading }] = usePostArticleMutation();
   const [fileList, setFileList] = useState([]); // FileList state for image uploads
-  const { data: categories, isLoading: isCategoryLoading } =
-    useGetCategoryQuery(); // Fetch categories
+  const { data: categories, isLoading: isCategoryLoading } = useGetCategoryQuery(); // Fetch categories
   const editor = useRef(null);
+  const [form] = Form.useForm();
 
   const handleAddArticle = async (values) => {
-    
     if (!content.trim()) {
-      return alert("Description content is required!");
+      return message.error("Description content is required!");
+    }
+
+    if (fileList.length === 0) {
+      return message.error("Please upload at least one image!");
     }
 
     const formData = new FormData();
@@ -25,21 +28,26 @@ const AddArticleModal = ({ setOpenAddModal, openAddModal }) => {
     formData.append("description", content);
 
     fileList.forEach((file) => {
-      console.log(file)
       if (file.originFileObj) {
-        
         formData.append("article_images", file.originFileObj);
       }
     });
 
     try {
       await addArticle(formData).unwrap();
-      alert("Article added successfully!");
-      setOpenAddModal(false);
+      message.success("Article added successfully!");
+      handleClose();
     } catch (error) {
       console.error("Failed to add article:", error);
-      alert("Failed to add article. Please try again.");
+      message.error("Failed to add article. Please try again.");
     }
+  };
+
+  const handleClose = () => {
+    setContent(""); // Clear description content
+    setFileList([]); // Clear uploaded images
+    form.resetFields(); // Reset all form fields
+    setOpenAddModal(false); // Close the modal
   };
 
   const config = {
@@ -61,7 +69,7 @@ const AddArticleModal = ({ setOpenAddModal, openAddModal }) => {
   };
 
   const onChange = ({ fileList: newFileList }) => {
-    setFileList(newFileList); // Update file list when files are added/removed
+    setFileList(newFileList);
   };
 
   const onPreview = async (file) => {
@@ -83,13 +91,18 @@ const AddArticleModal = ({ setOpenAddModal, openAddModal }) => {
     <Modal
       centered
       open={openAddModal}
-      onCancel={() => setOpenAddModal(false)}
+      onCancel={handleClose}
       footer={null}
       width={1000}
     >
       <div className="mb-11">
         <h2 className="font-bold text-center mb-11">+ Add Article</h2>
-        <Form layout="vertical" onFinish={handleAddArticle}>
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleAddArticle}
+          initialValues={{ title: "", categoryId: null }}
+        >
           <div className="grid grid-cols-2 gap-4">
             <Form.Item
               name="title"
@@ -120,21 +133,31 @@ const AddArticleModal = ({ setOpenAddModal, openAddModal }) => {
               value={content}
               config={config}
               tabIndex={1}
-              onBlur={(newContent) => setContent(newContent)} // Save content on blur
+              onBlur={(newContent) => setContent(newContent)}
             />
           </div>
-          <Form.Item label="Upload Images">
-          
-              <Upload
-                listType="picture-card"
-                fileList={fileList}
-                onChange={onChange}
-                onPreview={onPreview}
-                beforeUpload={() => false} // Prevent auto-upload
-              >
-                {fileList.length < 5 && "+ Upload"}
-              </Upload>
-          
+          <Form.Item
+            label="Upload Images"
+            rules={[
+              {
+                validator: () => {
+                  if (fileList.length === 0) {
+                    return Promise.reject("Please upload at least one image!");
+                  }
+                  return Promise.resolve();
+                },
+              },
+            ]}
+          >
+            <Upload
+              listType="picture-card"
+              fileList={fileList}
+              onChange={onChange}
+              onPreview={onPreview}
+              beforeUpload={() => false} 
+            >
+              {fileList.length < 5 && "+ Upload"}
+            </Upload>
           </Form.Item>
           <div className="w-full flex gap-3 mt-11">
             <Button
@@ -149,7 +172,7 @@ const AddArticleModal = ({ setOpenAddModal, openAddModal }) => {
             <Button
               type="default"
               className="w-full"
-              onClick={() => setOpenAddModal(false)}
+              onClick={handleClose}
               style={{
                 background: "#D9000A",
                 color: "#fff",

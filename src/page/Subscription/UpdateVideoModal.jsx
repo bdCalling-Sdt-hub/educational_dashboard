@@ -1,21 +1,30 @@
 import { useEffect, useState } from "react";
-import { Modal, Form, Input, Upload, Button } from "antd";
+import { Modal, Form, Input, Upload, Button, message, Progress } from "antd";
 import { imageUrl } from "../../redux/Api/baseApi";
 import toast from "react-hot-toast";
 import { useUpdateVideosMutation } from "../../redux/Api/videoApi";
+import { uploadVideoChunks } from "../../utils/uploadVideoChunks";
 
 const UpdateVideoModal = ({ isModalOpen, setEditModal, video }) => {
   const [form] = Form.useForm();
   const [fileListImage, setFileListImage] = useState([]);
   const [fileListVideo, setFileListVideo] = useState([]);
   const [updateVideo] = useUpdateVideosMutation();
+  const [loading, setLoading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [videoUrl, setVideoUrl] = useState("");
+  const [videos, setVideo] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
 
-  // Populate form and uploads when video data is provided
   useEffect(() => {
     if (video) {
-      console.log("Editing Video:", video); // Debugging
-
-      const { title, description, category, thumbnail_image, video: videoPath } = video;
+      const {
+        title,
+        description,
+        category,
+        thumbnail_image,
+        video: videoPath,
+      } = video;
 
       // Set default form values
       form.setFieldsValue({
@@ -24,24 +33,29 @@ const UpdateVideoModal = ({ isModalOpen, setEditModal, video }) => {
         category,
       });
 
-      // Pre-fill image and video upload fields
-      setFileListImage([
-        {
-          uid: "-1",
-          name: "thumbnail",
-          status: "done",
-          url: `${imageUrl}/${thumbnail_image}`,
-        },
-      ]);
+      
+      if (thumbnail_image) {
+        setFileListImage([
+          {
+            uid: "-1",
+            name: "thumbnail",
+            status: "done",
+            url: `${imageUrl}/${thumbnail_image}`,
+          },
+        ]);
+      }
 
-      setFileListVideo([
-        {
-          uid: "-2",
-          name: "video",
-          status: "done",
-          url: `${imageUrl}${videoPath}`,
-        },
-      ]);
+      if (videoPath) {
+        setFileListVideo([
+          {
+            uid: "-2",
+            name: "video",
+            status: "done",
+            url: `${videoPath}`,
+          },
+        ]);
+        setVideoUrl(`${imageUrl}${videoPath}`);
+      }
     }
   }, [video, form]);
 
@@ -51,6 +65,27 @@ const UpdateVideoModal = ({ isModalOpen, setEditModal, video }) => {
 
   const onVideoChange = ({ fileList }) => {
     setFileListVideo(fileList);
+  };
+
+  const handleVideoUpload = async ({ file }) => {
+    setIsUploading(true);
+    setUploadProgress(0);
+    setLoading(true);
+    if (file) {
+      setVideo(file);
+    }
+    try {
+      const result = await uploadVideoChunks(file, setUploadProgress);
+      console.log(result);
+      setVideoUrl(result); // Save the uploaded video URL
+      setIsUploading(false);
+      setFileListVideo([{ originFileObj: file }]);
+    } catch (error) {
+      message.error("Failed to upload video. Please try again.");
+      console.error("Video upload error:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleSubmit = async (values) => {
@@ -63,10 +98,11 @@ const UpdateVideoModal = ({ isModalOpen, setEditModal, video }) => {
       formData.append("thumbnail_image", fileListImage[0].originFileObj);
     }
 
-    if (fileListVideo[0]?.originFileObj) {
-      formData.append("video", fileListVideo[0].originFileObj);
+    if (videoUrl) {
+      formData.append("video", videoUrl); // Use the uploaded video URL
     }
 
+    setLoading(true);
     try {
       await updateVideo({ id: video._id, formData }).unwrap();
       toast.success("Video updated successfully!");
@@ -74,6 +110,8 @@ const UpdateVideoModal = ({ isModalOpen, setEditModal, video }) => {
     } catch (error) {
       toast.error("Failed to update the video.");
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -99,7 +137,9 @@ const UpdateVideoModal = ({ isModalOpen, setEditModal, video }) => {
           <Form.Item
             label="Description"
             name="description"
-            rules={[{ required: true, message: "Please enter the description" }]}
+            rules={[
+              { required: true, message: "Please enter the description" },
+            ]}
           >
             <Input.TextArea rows={3} placeholder="Enter description" />
           </Form.Item>
@@ -132,16 +172,51 @@ const UpdateVideoModal = ({ isModalOpen, setEditModal, video }) => {
                 listType="picture-card"
                 fileList={fileListVideo}
                 onChange={onVideoChange}
+                customRequest={handleVideoUpload}
                 accept="video/*"
                 maxCount={1}
+                showUploadList={false} // Hide the default upload list
               >
-                {fileListVideo.length < 1 ? "+ Upload Video" : null}
+                {isUploading ? (
+                  <div className="flex justify-center items-center">
+                    <Progress
+                      type="circle"
+                      percent={uploadProgress}
+                      status={uploadProgress === 100 ? "success" : "active"}
+                    />
+                  </div>
+                ) : fileListVideo.length > 0 || videoUrl ? (
+                  <div className="relative">
+                    <video
+                      src={videoUrl || fileListVideo[0]?.url}
+                      className="w-full h-40 object-cover"
+                      controls
+                    />
+                    <Button
+                      className="absolute top-2 right-2 bg-red-600 text-white"
+                      size="small"
+                      onClick={() => {
+                        setFileListVideo([]);
+                        setVideoUrl("");
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                ) : (
+                  "+ Upload Video"
+                )}
               </Upload>
             </Form.Item>
           </div>
 
           <div className="flex justify-end gap-3 mt-4">
-            <Button type="primary" htmlType="submit" className="bg-[#2F799E] text-white">
+            <Button
+              type="primary"
+              htmlType="submit"
+              className="bg-[#2F799E] text-white"
+              loading={loading}
+            >
               Save
             </Button>
             <Button

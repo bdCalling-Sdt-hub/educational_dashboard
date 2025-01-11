@@ -1,5 +1,5 @@
-import { Table, Input, Space, Modal } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
+import { Table, Input, Space, Modal, Spin } from "antd";
+import { LoadingOutlined, SearchOutlined } from "@ant-design/icons";
 import { MdBlockFlipped } from "react-icons/md";
 import { LuEye } from "react-icons/lu";
 import { FaArrowLeft } from "react-icons/fa";
@@ -13,16 +13,15 @@ import {
 import toast from "react-hot-toast";
 import Loading from "../../loading/Loading";
 
-
 const UserManagement = () => {
   const [modal2Open, setModal2Open] = useState(false);
   const [selectedRecord, setSelectedRecord] = useState(null);
+  const [loadingId, setLoadingId] = useState(null); // State for button loading
   const navigate = useNavigate();
 
   const { data, isLoading, error } = useGetUserManageQuery();
   const [blockUser] = useBlockUserMutation();
 
-  // Normalize data for table
   const userData = data?.data?.result.map((user, index) => ({
     key: user._id,
     sl: index + 1,
@@ -31,24 +30,25 @@ const UserManagement = () => {
     dateOfBirth: user.dateOfBirth || "N/A",
     contactNumber: user.phone || "N/A",
     email: user.email || "N/A",
-    status: user.user?.status || "N/A", // blocked or in-progress
+    status: user.user?.status || "N/A",
   }));
 
-  // Function to open the modal
   const openModal = (record) => {
     setSelectedRecord(record);
     setModal2Open(true);
   };
 
-  // Function to close the modal
   const closeModal = () => {
     setModal2Open(false);
     setSelectedRecord(null);
   };
 
   const handleToggleStatus = async (record) => {
-    console.log(record);
     const newStatus = record.status === "blocked" ? "in-progress" : "blocked";
+
+    // Set loading for the specific record
+    setLoadingId(record.key);
+
     try {
       const res = await blockUser({
         id: record.userId,
@@ -57,10 +57,12 @@ const UserManagement = () => {
 
       if (res?.success) {
         toast.success(res.message);
+        record.status = newStatus; // Update status locally
       }
-      record.status = newStatus;
     } catch (error) {
       toast.error("Failed to update status:", error);
+    } finally {
+      setLoadingId(null); // Reset loading state
     }
   };
 
@@ -115,8 +117,13 @@ const UserManagement = () => {
             className={`${
               record.status === "blocked" ? "bg-red-600" : "bg-gray-600"
             } text-white w-[30px] h-[30px] flex justify-center text-xl items-center rounded-md`}
+            disabled={loadingId === record.key} // Disable button while loading
           >
-            <MdBlockFlipped />
+            {loadingId === record.key ? (
+              <Spin indicator={<LoadingOutlined spin />} size="small" />
+            ) : (
+              <MdBlockFlipped />
+            )}
           </button>
         </Space>
       ),
@@ -140,7 +147,9 @@ const UserManagement = () => {
       </div>
 
       {isLoading ? (
-        <p className="-mt-32"><Loading></Loading></p>
+        <p className="-mt-32">
+          <Loading />
+        </p>
       ) : error ? (
         <p>Failed to load user data.</p>
       ) : (

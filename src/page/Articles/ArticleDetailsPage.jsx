@@ -29,40 +29,40 @@ const ArticleDetailsPage = () => {
 
   return (
     <div>
-      <h1 className="flex gap-4 mb-7 mt-4 text-[#2F799E]">
-        <button className="" onClick={() => navigate(-1)}>
+      <h1 onClick={() => navigate(-1)} className="flex gap-4 mb-7 mt-4 text-[#2F799E]">
+        <button className="" >
           <FaArrowLeft />
         </button>
-        <span className="text-lg font-semibold">Article</span>
+        <button className="text-lg font-semibold">Article</button>
       </h1>
       <div>
         {/* Main Section */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className=" gap-4">
           {/* First Article Image */}
           {article_images?.[0] && (
             <img
-              className="w-full col-span-1"
+              className="w-full col-span-1 rounded-3xl"
               src={constructImageUrl(article_images[0])}
               alt="Article Thumbnail"
               onError={(e) => (e.target.src = "/path-to-placeholder.jpg")} // Fallback for broken images
             />
           )}
           <div className="col-span-2">
-            <h3 className="text-xl font-bold">{title}</h3>
+            <h3 className="text-xl font-bold mt-3">{title}</h3>
             {/* Render HTML Content */}
             <div
               dangerouslySetInnerHTML={{ __html: description }}
-              className="text-gray-700"
+              className="text-gray-700 mt-3"
             />
           </div>
         </div>
 
         {/* Additional Images */}
-        <div className="grid grid-cols-3 mt-11 gap-4">
+        <div className=" mt-11 gap-4">
           {article_images.slice(1).map((img, index) => (
             <img
               key={index}
-              className="w-full"
+              className="w-full rounded-3xl"
               src={constructImageUrl(img)}
               alt={`Article Image ${index + 2}`}
               onError={(e) => (e.target.src = "/path-to-placeholder.jpg")} // Fallback for broken images

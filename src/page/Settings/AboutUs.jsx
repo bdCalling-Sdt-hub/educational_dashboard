@@ -9,6 +9,7 @@ import {
   useUpdateAboutMutation,
 } from "../../redux/Api/privecyApi";
 import toast from "react-hot-toast";
+import { Button } from "antd";
 
 const AboutUs = () => {
   const { data: getTerms } = useGetAboutQuery();
@@ -22,7 +23,9 @@ const AboutUs = () => {
 
   const handleTerms = async () => {
     const description = content;  
+    seLoading(true);
     const res = await addPrivecy({ description }).unwrap();
+    seLoading(false);
     console.log("res", res);
     toast.success("Privecy Update successfully!");
   };
@@ -69,12 +72,13 @@ const AboutUs = () => {
           onChange={(newContent) => {}}
         />
         <div className="flex items-center justify-center mt-5">
-          <button
-            onClick={handleTerms}
-            className="bg-black text-white px-4 py-2 rounded-full test"
-          >
-            Save Changes
-          </button>
+        <Button
+      onClick={handleTerms}
+      className="bg-black text-white px-4 py-2 rounded-full test"
+      loading={isLoading} // Loading state controlled by isLoading
+    >
+      Save Changes
+    </Button>
         </div>
       </div>
     </>

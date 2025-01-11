@@ -36,19 +36,19 @@ const AddVideoModal = ({ openAddModal, setOpenAddModal }) => {
 
   const handleVideoUpload = async ({ file }) => {
     setIsUploading(true);
-    setUploadProgress(0); // Reset progress for new uploads
+    setUploadProgress(0); 
     setLoading(true);
-  
+
     if (file) {
       setVideo(file);
     }
-  
+
     try {
       const result = await uploadVideoChunks(file, setUploadProgress);
       console.log("result", result);
       setVideoUrl(result);
-      setIsUploading(false); // Stop showing progress
-      setFileListVideo([{ originFileObj: file }]); // Set the video file list
+      setIsUploading(false); 
+      setFileListVideo([{ originFileObj: file }]); 
     } catch (error) {
       message.error("Failed to upload video. Please try again.");
       console.error("Video upload error:", error);
@@ -142,37 +142,37 @@ const AddVideoModal = ({ openAddModal, setOpenAddModal }) => {
             </Form.Item>
 
             <Form.Item
-  label="Add Video"
-  rules={[{ required: true, message: "Please upload a video" }]}
->
-  <Upload
-    listType="picture-card"
-    fileList={fileListVideo}
-    onChange={onVideoChange}
-    customRequest={handleVideoUpload}
-    accept="video/*"
-    showUploadList={false} // Hide default upload list
-    maxCount={1}
-  >
-    {isUploading ? (
-      <div className="flex justify-center items-center h-full">
-        <Progress
-          type="circle"
-          percent={uploadProgress}
-          status={uploadProgress === 100 ? "success" : "active"}
-        />
-      </div>
-    ) : fileListVideo.length > 0 ? (
-      <video
-        src={URL.createObjectURL(fileListVideo[0].originFileObj)}
-        className="w-full h-full object-cover relative"
-        controls
-      />
-    ) : (
-      "+ Upload Video"
-    )}
-  </Upload>
-</Form.Item>
+              label="Add Video"
+              rules={[{ required: true, message: "Please upload a video" }]}
+            >
+              <Upload
+                listType="picture-card"
+                fileList={fileListVideo}
+                onChange={onVideoChange}
+                customRequest={handleVideoUpload}
+                accept="video/*"
+                showUploadList={false} 
+                maxCount={1}
+              >
+                {isUploading ? (
+                  <div className="flex justify-center items-center h-full">
+                    <Progress
+                      type="circle"
+                      percent={uploadProgress}
+                      status={uploadProgress === 100 ? "success" : "active"}
+                    />
+                  </div>
+                ) : fileListVideo.length > 0 ? (
+                  <video
+                    src={URL.createObjectURL(fileListVideo[0].originFileObj)}
+                    className="w-full h-full object-cover relative"
+                    controls
+                  />
+                ) : (
+                  "+ Upload Video"
+                )}
+              </Upload>
+            </Form.Item>
           </div>
 
           <div className="flex justify-end gap-3 mt-4">
