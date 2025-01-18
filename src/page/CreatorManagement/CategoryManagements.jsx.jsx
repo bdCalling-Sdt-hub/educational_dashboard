@@ -67,35 +67,35 @@ const CategoryManagements = () => {
     const formData = new FormData();
     formData.append("name", editedCategory);
   
-    // if (fileList.length > 0) {
-    //   if (fileList[0].originFileObj) {
-    //     formData.append("category_image", fileList[0].originFileObj);
-    //   } else if (fileList[0].url) {
-    //     formData.append("existingImageUrl", fileList[0].url.replace(imageUrl, ""));
-    //   }
-    // }
-    formData.append("category_image", fileList[0].originFileObj);
+    if (fileList.length > 0) {
+      if (fileList[0]?.originFileObj) {
+        // A new file is uploaded
+        formData.append("category_image", fileList[0].originFileObj);
+      } else if (fileList[0]?.url) {
+        // Use existing image
+        formData.append("existingImageUrl", fileList[0].url.replace(`${imageUrl}/`, ""));
+      }
+    }
   
-    console.log(fileList)
     setLoading(true);
     try {
       const res = await updateCategory({
         categoryId: editModal.id,
         data: formData,
       }).unwrap();
-      console.log("Response:", res); 
       message.success(res?.message || "Category updated successfully!");
       setEditModal({ isOpen: false, id: null });
       setEditedCategory("");
       setFileList([]);
       refetchCategories();
     } catch (err) {
-      console.error("Update Error:", err); // Debug error
+      console.error("Update Error:", err);
       message.error(err?.data?.message || "Failed to update category.");
     } finally {
       setLoading(false);
     }
   };
+  
 
   const handleDeleteCategory = async (id) => {
     setLoading(true);
@@ -125,6 +125,7 @@ const CategoryManagements = () => {
       : [];
     setFileList(existingImage);
   };
+  
 
   const handleCloseEditModal = () => {
     setEditModal({ isOpen: false, id: null });

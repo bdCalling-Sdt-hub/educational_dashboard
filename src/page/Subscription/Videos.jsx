@@ -32,15 +32,11 @@ const handleDelete = async (id) => {
 };
 
 const handleEdit = (video) => {
-  
-  
   console.log(video)
-
   setEditModal({
     isOpen: true,
     video, 
   });
-
 };
 
   return (

@@ -33,7 +33,6 @@ const UpdateVideoModal = ({ isModalOpen, setEditModal, video }) => {
         category,
       });
 
-      
       if (thumbnail_image) {
         setFileListImage([
           {
@@ -51,10 +50,10 @@ const UpdateVideoModal = ({ isModalOpen, setEditModal, video }) => {
             uid: "-2",
             name: "video",
             status: "done",
-            url: `${videoPath}`,
+            url: `${imageUrl}/${videoPath}`,
           },
         ]);
-        setVideoUrl(`${imageUrl}${videoPath}`);
+        setVideoUrl(videoPath); // Only store the video path, not the full URL
       }
     }
   }, [video, form]);
@@ -77,7 +76,7 @@ const UpdateVideoModal = ({ isModalOpen, setEditModal, video }) => {
     try {
       const result = await uploadVideoChunks(file, setUploadProgress);
       console.log(result);
-      setVideoUrl(result); // Save the uploaded video URL
+      setVideoUrl(result); // Save only the video path (result should be the relative path)
       setIsUploading(false);
       setFileListVideo([{ originFileObj: file }]);
     } catch (error) {
@@ -99,7 +98,7 @@ const UpdateVideoModal = ({ isModalOpen, setEditModal, video }) => {
     }
 
     if (videoUrl) {
-      formData.append("video", videoUrl); // Use the uploaded video URL
+      formData.append("video", videoUrl); // Only append the relative video path
     }
 
     setLoading(true);
@@ -168,45 +167,47 @@ const UpdateVideoModal = ({ isModalOpen, setEditModal, video }) => {
 
             {/* Video File */}
             <Form.Item label="Video File">
-              <Upload
-                listType="picture-card"
-                fileList={fileListVideo}
-                onChange={onVideoChange}
-                customRequest={handleVideoUpload}
-                accept="video/*"
-                maxCount={1}
-                showUploadList={false} // Hide the default upload list
-              >
-                {isUploading ? (
-                  <div className="flex justify-center items-center">
-                    <Progress
-                      type="circle"
-                      percent={uploadProgress}
-                      status={uploadProgress === 100 ? "success" : "active"}
-                    />
-                  </div>
-                ) : fileListVideo.length > 0 || videoUrl ? (
-                  <div className="relative">
-                    <video
-                      src={videoUrl || fileListVideo[0]?.url}
-                      className="w-full h-40 object-cover"
-                      controls
-                    />
-                    <Button
-                      className="absolute top-2 right-2 bg-red-600 text-white"
-                      size="small"
-                      onClick={() => {
-                        setFileListVideo([]);
-                        setVideoUrl("");
-                      }}
-                    >
-                      Delete
-                    </Button>
-                  </div>
-                ) : (
-                  "+ Upload Video"
-                )}
-              </Upload>
+            <Upload
+  listType="picture-card"
+  fileList={fileListVideo}
+  onChange={onVideoChange}
+  customRequest={handleVideoUpload}
+  accept="video/*"
+  maxCount={1}
+  showUploadList={false} // Hide the default upload list
+>
+  {isUploading ? (
+    <div className="flex justify-center items-center">
+      <Progress
+        type="circle"
+        percent={uploadProgress}
+        status={uploadProgress === 100 ? "success" : "active"}
+      />
+    </div>
+  ) : fileListVideo.length > 0 || videoUrl ? (
+    <div className="relative">
+      <video
+        src={videoUrl.startsWith("http") ? videoUrl : `${imageUrl}/${videoUrl}`}
+        className="w-full h-40 object-cover"
+        controls
+        autoPlay
+      />
+      <Button
+        className="absolute top-2 right-2 bg-red-600 text-white"
+        size="small"
+        onClick={() => {
+          setFileListVideo([]);
+          setVideoUrl("");
+        }}
+      >
+        Delete
+      </Button>
+    </div>
+  ) : (
+    "+ Upload Video"
+  )}
+</Upload>
+
             </Form.Item>
           </div>
 
