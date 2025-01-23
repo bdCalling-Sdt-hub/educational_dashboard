@@ -1,4 +1,4 @@
-import { Table, Input, Space, Modal, Spin } from "antd";
+import { Table, Input, Space, Modal, Spin, message } from "antd";
 import { LoadingOutlined, SearchOutlined } from "@ant-design/icons";
 import { MdBlockFlipped } from "react-icons/md";
 import { LuEye } from "react-icons/lu";
@@ -56,13 +56,14 @@ const UserManagement = () => {
       }).unwrap();
 
       if (res?.success) {
-        toast.success(res.message);
-        record.status = newStatus; // Update status locally
+       
+        message.success(res.message);
+        record.status = newStatus;
       }
     } catch (error) {
-      toast.error("Failed to update status:", error);
+      message.error("Failed to update status:", error);
     } finally {
-      setLoadingId(null); // Reset loading state
+      setLoadingId(null);
     }
   };
 

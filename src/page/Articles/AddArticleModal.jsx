@@ -53,19 +53,19 @@ const AddArticleModal = ({ setOpenAddModal, openAddModal }) => {
   const config = {
     readonly: false,
     placeholder: "Start typing...",
-    buttons: [
-      "bold",
-      "italic",
-      "underline",
-      "|",
-      "font",
-      "fontsize",
-      "brush",
-      "align",
-      "|",
-      "image",
-      "link",
-    ],
+    // buttons: [
+    //   "bold",
+    //   "italic",
+    //   "underline",
+    //   "|",
+    //   "font",
+    //   "fontsize",
+    //   "brush",
+    //   "align",
+    //   "|",
+    //   "image",
+    //   "link",
+    // ],
   };
 
   const onChange = ({ fileList: newFileList }) => {

@@ -26,7 +26,7 @@ const FAQ = () => {
         .unwrap()
         .then(() => {
           refetch();
-          message.success('FAQ added successfully!');
+          message.success( 'FAQ added successfully!');
           setIsModalOpen(false);
           form.resetFields();
         })

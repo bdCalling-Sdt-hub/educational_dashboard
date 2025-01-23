@@ -49,6 +49,7 @@ const ProtectedRoute = ({ children }) => {
   }
 
   const { data: getUserInfo, isError, isLoading, isFetching } = useGetAdminQuery();
+  console.log(getUserInfo)
 
   if (isLoading || isFetching) {
     return (

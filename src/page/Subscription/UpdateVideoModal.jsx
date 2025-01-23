@@ -30,7 +30,7 @@ const UpdateVideoModal = ({ isModalOpen, setEditModal, video }) => {
       form.setFieldsValue({
         title,
         description,
-        category,
+        category: category?._id, // Set the ObjectId in the hidden input
       });
 
       if (thumbnail_image) {
@@ -57,6 +57,7 @@ const UpdateVideoModal = ({ isModalOpen, setEditModal, video }) => {
       }
     }
   }, [video, form]);
+  
 
   const onImageChange = ({ fileList }) => {
     setFileListImage(fileList);
@@ -92,22 +93,23 @@ const UpdateVideoModal = ({ isModalOpen, setEditModal, video }) => {
     formData.append("title", values.title);
     formData.append("description", values.description);
     formData.append("category", values.category);
-
+     // This should now be the ObjectId
+  
     if (fileListImage[0]?.originFileObj) {
       formData.append("thumbnail_image", fileListImage[0].originFileObj);
     }
-
+  
     if (videoUrl) {
       formData.append("video", videoUrl); // Only append the relative video path
     }
-
+  
     setLoading(true);
     try {
       await updateVideo({ id: video._id, formData }).unwrap();
-      toast.success("Video updated successfully!");
+      message.success("Video updated successfully!");
       setEditModal({ isOpen: false, id: null });
     } catch (error) {
-      toast.error("Failed to update the video.");
+      message.error("Failed to update the video.");
       console.error(error);
     } finally {
       setLoading(false);
@@ -143,14 +145,13 @@ const UpdateVideoModal = ({ isModalOpen, setEditModal, video }) => {
             <Input.TextArea rows={3} placeholder="Enter description" />
           </Form.Item>
 
-          <Form.Item
-            label="Category"
-            name="category"
-            rules={[{ required: true, message: "Please enter the category" }]}
-          >
-            <Input placeholder="Enter category" />
-          </Form.Item>
+          <Form.Item label="Category">
+  <Input value={video?.category?.name} disabled />
+</Form.Item>
 
+<Form.Item name="category" hidden>
+  <Input value={video?.category?._id} />
+</Form.Item>
           <div className="grid grid-cols-2 gap-4">
             {/* Thumbnail Image */}
             <Form.Item label="Thumbnail Image">
@@ -167,47 +168,50 @@ const UpdateVideoModal = ({ isModalOpen, setEditModal, video }) => {
 
             {/* Video File */}
             <Form.Item label="Video File">
-            <Upload
-  listType="picture-card"
-  fileList={fileListVideo}
-  onChange={onVideoChange}
-  customRequest={handleVideoUpload}
-  accept="video/*"
-  maxCount={1}
-  showUploadList={false} // Hide the default upload list
->
-  {isUploading ? (
-    <div className="flex justify-center items-center">
-      <Progress
-        type="circle"
-        percent={uploadProgress}
-        status={uploadProgress === 100 ? "success" : "active"}
-      />
-    </div>
-  ) : fileListVideo.length > 0 || videoUrl ? (
-    <div className="relative">
-      <video
-        src={videoUrl.startsWith("http") ? videoUrl : `${imageUrl}/${videoUrl}`}
-        className="w-full h-40 object-cover"
-        controls
-        autoPlay
-      />
-      <Button
-        className="absolute top-2 right-2 bg-red-600 text-white"
-        size="small"
-        onClick={() => {
-          setFileListVideo([]);
-          setVideoUrl("");
-        }}
-      >
-        Delete
-      </Button>
-    </div>
-  ) : (
-    "+ Upload Video"
-  )}
-</Upload>
-
+              <Upload
+                listType="picture-card"
+                fileList={fileListVideo}
+                onChange={onVideoChange}
+                customRequest={handleVideoUpload}
+                accept="video/*"
+                maxCount={1}
+                showUploadList={false} // Hide the default upload list
+              >
+                {isUploading ? (
+                  <div className="flex justify-center items-center">
+                    <Progress
+                      type="circle"
+                      percent={uploadProgress}
+                      status={uploadProgress === 100 ? "success" : "active"}
+                    />
+                  </div>
+                ) : fileListVideo.length > 0 || videoUrl ? (
+                  <div className="relative">
+                    <video
+                      src={
+                        videoUrl.startsWith("http")
+                          ? videoUrl
+                          : `${imageUrl}${videoUrl}`
+                      }
+                      className="w-full h-40 object-cover"
+                      controls
+                      autoPlay
+                    />
+                    <Button
+                      className="absolute top-2 right-2 bg-red-600 text-white"
+                      size="small"
+                      onClick={() => {
+                        setFileListVideo([]);
+                        setVideoUrl("");
+                      }}
+                    >
+                      Delete
+                    </Button>
+                  </div>
+                ) : (
+                  "+ Upload Video"
+                )}
+              </Upload>
             </Form.Item>
           </div>
 
@@ -215,7 +219,7 @@ const UpdateVideoModal = ({ isModalOpen, setEditModal, video }) => {
             <Button
               type="primary"
               htmlType="submit"
-              className="bg-[#2F799E] text-white"
+              className="bg-[#2F799E] text-white w-full"
               loading={loading}
             >
               Save
@@ -223,7 +227,7 @@ const UpdateVideoModal = ({ isModalOpen, setEditModal, video }) => {
             <Button
               type="danger"
               onClick={() => setEditModal({ isOpen: false, id: null })}
-              className="bg-[#D9000A] text-white"
+              className="bg-[#D9000A] text-white w-full"
             >
               Cancel
             </Button>

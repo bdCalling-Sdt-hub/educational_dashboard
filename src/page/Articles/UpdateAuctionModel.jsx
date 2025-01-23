@@ -23,25 +23,26 @@ const UpdateAuctionModal = ({ isModalOpen, setIsModalOpen, singleArticle }) => {
   const onFinish = async (values) => {
     const id = singleArticle?._id;
     const data = { ...values };
-
+  
     const existingImages = fileList
       .filter((file) => file.url)
       .map((file) => file.url.replace(imageUrl, ""));
     const newImages = fileList.filter((file) => file.originFileObj);
-
+  
     const formData = new FormData();
     formData.append(
       "data",
       JSON.stringify({
         ...data,
+        category: singleArticle?.category?._id, // Use ObjectId for category
         article_images: existingImages,
       })
     );
-
+  
     newImages.forEach((file) => {
       formData.append("article_images", file.originFileObj);
     });
-
+  
     try {
       const res = await updateArticle({ formData, id }).unwrap();
       message.success(res?.message);
@@ -52,15 +53,16 @@ const UpdateAuctionModal = ({ isModalOpen, setIsModalOpen, singleArticle }) => {
       message.error(error?.data?.message);
     }
   };
+  
 
   useEffect(() => {
     if (singleArticle) {
       form.setFieldsValue({
         title: singleArticle?.title,
         description: singleArticle?.description,
-        category: singleArticle?.category || undefined,
+        category: singleArticle?.category?.name, // Set the ObjectId
       });
-
+  
       if (
         singleArticle.article_images &&
         singleArticle.article_images.length > 0
@@ -75,6 +77,7 @@ const UpdateAuctionModal = ({ isModalOpen, setIsModalOpen, singleArticle }) => {
       }
     }
   }, [singleArticle, form]);
+  
 
   const config = {
     readonly: false,
@@ -122,9 +125,9 @@ const UpdateAuctionModal = ({ isModalOpen, setIsModalOpen, singleArticle }) => {
           >
             <Input />
           </Form.Item>
-          <Form.Item label="Category" name="category" className="w-full">
-            <Select placeholder="Select Category" />
-          </Form.Item>
+          <Form.Item label="Category" name="category">
+  <Input disabled />
+</Form.Item>
         </div>
 
         <Form.Item

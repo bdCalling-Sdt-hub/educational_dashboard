@@ -42,7 +42,7 @@ const AddVideoModal = ({ openAddModal, setOpenAddModal }) => {
     if (file) {
       setVideo(file);
     }
-
+    setLoading(true);
     try {
       const result = await uploadVideoChunks(file, setUploadProgress);
       console.log("result", result);
@@ -72,6 +72,7 @@ const AddVideoModal = ({ openAddModal, setOpenAddModal }) => {
     try {
       const response = await addVideo(formData).unwrap();
       message.success("Video added successfully!");
+      setLoading(false);
       setOpenAddModal(false);
       setFileListImage([]);
       setFileListVideo([]);
@@ -81,6 +82,7 @@ const AddVideoModal = ({ openAddModal, setOpenAddModal }) => {
       );
       console.error("Error adding video:", error);
     }
+    
   };
 
   return (
@@ -179,6 +181,7 @@ const AddVideoModal = ({ openAddModal, setOpenAddModal }) => {
             <Button
               type="primary"
               htmlType="submit"
+              loading={loading}
               className="bg-[#2F799E] text-white"
             >
               Save

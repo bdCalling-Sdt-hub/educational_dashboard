@@ -82,11 +82,7 @@ const items = [
         label: "FAQ",
         link: "/dashboard/Settings/FAQ",
       },
-      {
-        key: "contact",
-        label: "Contact",
-        link: "/dashboard/Settings/contact",
-      },
+      
       {
         key: "feedback",
         label: "Feedback",

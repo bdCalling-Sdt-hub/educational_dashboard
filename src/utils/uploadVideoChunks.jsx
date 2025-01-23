@@ -18,7 +18,7 @@ export const uploadVideoChunks = async (file, onProgress) => {
 
     try {
       const response = await axios.post(
-        `http://10.0.60.37:9050/upload-video`,
+        `http://143.110.241.146:9050/upload-video`,
         // `http://192.168.10.11:9000/upload`,
         formData,
         {

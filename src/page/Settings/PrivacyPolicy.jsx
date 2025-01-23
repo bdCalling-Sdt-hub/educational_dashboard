@@ -7,7 +7,7 @@ import {
   usePostPrivecyMutation,
 } from "../../redux/Api/privecyApi";
 import toast from "react-hot-toast";
-import { Button } from "antd";
+import { Button, message } from "antd";
 
 const PrivacyPolicy = () => {
   const { data: getTerms } = useGetprivecyConditionsQuery();
@@ -24,13 +24,13 @@ const PrivacyPolicy = () => {
     const res = await addPrivecy({ description }).unwrap();
     seLoading(false);
     console.log("res", res);
-    toast.success("Privecy Update successfully!");
+    message.success(res?.message || "Privecy Update successfully!");
   };
   const config = {
     readonly: false,
     placeholder: "Start typings...",
     style: {
-      height: 400,
+      height: 700,
     },
     buttons: [
       "image",
