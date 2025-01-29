@@ -25,6 +25,7 @@ const AddArticleModal = ({ setOpenAddModal, openAddModal }) => {
     const formData = new FormData();
     formData.append("category", values.categoryId);
     formData.append("title", values.title);
+    formData.append("summery", values.summery);
     formData.append("description", content);
 
     fileList.forEach((file) => {
@@ -53,6 +54,10 @@ const AddArticleModal = ({ setOpenAddModal, openAddModal }) => {
   const config = {
     readonly: false,
     placeholder: "Start typing...",
+    style: {
+      
+      height: 500,
+    },
     // buttons: [
     //   "bold",
     //   "italic",
@@ -126,15 +131,37 @@ const AddArticleModal = ({ setOpenAddModal, openAddModal }) => {
               />
             </Form.Item>
           </div>
+          <Form.Item
+  name="summery"
+  label="Summary"
+  rules={[{ required: true, message: "Please enter the summary!" }]}
+>
+  <Input.TextArea
+    placeholder="Enter Summary"
+    className="bg-[#00000000]"
+    autoSize={{ minRows: 3, maxRows: 6 }} // Allows auto-resizing
+  />
+</Form.Item>
+
           <div>
             <p className="font-semibold mb-2">Description</p>
-            <JoditEditor
-              ref={editor}
-              value={content}
-              config={config}
-              tabIndex={1}
-              onBlur={(newContent) => setContent(newContent)}
-            />
+            <div className="w-full">
+  <p className="font-semibold mb-2">Description</p>
+  <JoditEditor
+    ref={editor}
+    value={content}
+    config={{
+      readonly: false,
+      placeholder: "Start typing...",
+      height: 500,
+      width: "100%", // Ensure full width
+    }}
+    tabIndex={1}
+    onBlur={(newContent) => setContent(newContent)}
+    className="w-full" // Ensures full width
+  />
+</div>
+
           </div>
           <Form.Item
             label="Upload Images"

@@ -63,8 +63,6 @@ const Articles = () => {
     setFileList(existingImages);
   };
 
-  
-
   const calculateDaysAgo = (createdAt) => {
     const createdDate = new Date(createdAt);
     const currentDate = new Date();
@@ -119,7 +117,7 @@ const Articles = () => {
           <NoData></NoData>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-2">
           {article?.data?.result.map((item) => {
             const imageSrc =
               item.article_images && item.article_images.length > 0
