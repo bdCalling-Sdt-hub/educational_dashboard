@@ -1,5 +1,5 @@
 import login from "../assets/auth/login.png";
-import { Form, Input } from "antd";
+import { Form, Input, message } from "antd";
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -25,11 +25,11 @@ const ResetPass = () => {
     resetPassword(data)
       .unwrap()
       .then((payload) => {
-        console.log(payload?.message);
+        message.success(payload?.message);
         // localStorage.removeItem('email')
         navigate("/login");
       })
-      .catch((error) => console.error(error?.data?.message));
+      .catch((error) => message.error(error?.data?.message));
   };
 
   const onFinishFailed = (errorInfo) => {

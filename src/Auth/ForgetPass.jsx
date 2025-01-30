@@ -1,5 +1,5 @@
 import login from "../assets/auth/login.png";
-import { Form, Input } from "antd";
+import { Form, Input, message } from "antd";
 
 import { useState } from "react";
 import { useForgotPasswordMutation } from "../redux/Api/userApi";
@@ -14,11 +14,11 @@ const ForgetPass = () => {
     forgotPassword(values)
       .unwrap()
       .then((payload) => {
-        alert("success");
+        message.success(payload.message)
         navigate("/verify");
         localStorage.setItem("email", values?.email);
       })
-      .catch((error) => console.error(error?.data?.message));
+      .catch((error) => message.error(error.data.message));
   };
 
   const onFinishFailed = (errorInfo) => {

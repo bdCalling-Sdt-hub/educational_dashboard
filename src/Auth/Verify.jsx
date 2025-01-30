@@ -5,6 +5,7 @@ import login from "../assets/auth/login.png";
 
 import { useNavigate } from "react-router-dom";
 import { useVerifyOtpMutation } from "../redux/Api/userApi";
+import { message } from "antd";
 
 const Verify = () => {
   const [otp, setOtp] = useState("");
@@ -25,10 +26,10 @@ const Verify = () => {
       console.log(response);
       const token = response.data;
       localStorage.setItem("accessToken", token);
-      alert("Success");
+      message.success(response.message);
       navigate("/reset");
     } catch (error) {
-      console.error(error?.data?.message);
+      message.error(error?.data?.message);
     }
   };
 
