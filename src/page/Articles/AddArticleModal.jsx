@@ -9,7 +9,8 @@ const AddArticleModal = ({ setOpenAddModal, openAddModal }) => {
   const [content, setContent] = useState(""); // Content for the article
   const [addArticle, { isLoading }] = usePostArticleMutation();
   const [fileList, setFileList] = useState([]); // FileList state for image uploads
-  const { data: categories, isLoading: isCategoryLoading } = useGetCategoryQuery(); // Fetch categories
+  const { data: categories, isLoading: isCategoryLoading } =
+    useGetCategoryQuery(); // Fetch categories
   const editor = useRef(null);
   const [form] = Form.useForm();
 
@@ -55,7 +56,6 @@ const AddArticleModal = ({ setOpenAddModal, openAddModal }) => {
     readonly: false,
     placeholder: "Start typing...",
     style: {
-      
       height: 500,
     },
     // buttons: [
@@ -132,36 +132,35 @@ const AddArticleModal = ({ setOpenAddModal, openAddModal }) => {
             </Form.Item>
           </div>
           <Form.Item
-  name="summery"
-  label="Summary"
-  rules={[{ required: true, message: "Please enter the summary!" }]}
->
-  <Input.TextArea
-    placeholder="Enter Summary"
-    className="bg-[#00000000]"
-    autoSize={{ minRows: 3, maxRows: 6 }} // Allows auto-resizing
-  />
-</Form.Item>
+            name="summery"
+            label="Summary"
+            rules={[{ required: true, message: "Please enter the summary!" }]}
+          >
+            <Input.TextArea
+              placeholder="Enter Summary"
+              className="bg-[#00000000]"
+              autoSize={{ minRows: 3, maxRows: 6 }} // Allows auto-resizing
+            />
+          </Form.Item>
 
           <div>
             <p className="font-semibold mb-2">Description</p>
             <div className="w-full">
-  <p className="font-semibold mb-2">Description</p>
-  <JoditEditor
-    ref={editor}
-    value={content}
-    config={{
-      readonly: false,
-      placeholder: "Start typing...",
-      height: 500,
-      width: "100%", // Ensure full width
-    }}
-    tabIndex={1}
-    onBlur={(newContent) => setContent(newContent)}
-    className="w-full" // Ensures full width
-  />
-</div>
-
+              <p className="font-semibold mb-2">Description</p>
+              <JoditEditor
+                ref={editor}
+                value={content}
+                config={{
+                  readonly: false,
+                  placeholder: "Start typing...",
+                  height: 500,
+                  width: "100%", // Ensure full width
+                }}
+                tabIndex={1}
+                onBlur={(newContent) => setContent(newContent)}
+                className="w-full" // Ensures full width
+              />
+            </div>
           </div>
           <Form.Item
             label="Upload Images"
@@ -181,7 +180,7 @@ const AddArticleModal = ({ setOpenAddModal, openAddModal }) => {
               fileList={fileList}
               onChange={onChange}
               onPreview={onPreview}
-              beforeUpload={() => false} 
+              beforeUpload={() => false}
             >
               {fileList.length < 5 && "+ Upload"}
             </Upload>

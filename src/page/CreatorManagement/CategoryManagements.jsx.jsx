@@ -239,7 +239,7 @@ const CategoryManagements = () => {
         )}
       </div>
 
-      {/* Add Category Modal */}
+      {/* Add Category Moda */}
       <Modal
         centered
         open={openAddModal}
