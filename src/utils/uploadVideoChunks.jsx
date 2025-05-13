@@ -18,7 +18,7 @@ export const uploadVideoChunks = async (file, onProgress) => {
 
     try {
       const response = await axios.post(
-        `https://api.kidsknowrights.com/upload-video`,
+        `http://10.0.60.137:9050/upload-video`,
         // `http://192.168.10.11:9000/upload`,
         formData,
         {

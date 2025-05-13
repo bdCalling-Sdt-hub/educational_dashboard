@@ -141,7 +141,8 @@ const Articles = () => {
                   />
                 </div>
                 <div className="p-4 bg-[#2F799E] -mt-1 text-white">
-                  <h2 className="text-lg font-bold truncate">{item.title}</h2>
+                  <h2 className="text-sm text-gray-300  ">{item.language}</h2>
+                  <h2 className="text-xl font-bold truncate">{item.title}</h2>
                   <div className="flex justify-between gap-2">
                     <div className="text-sm text-gray-200 mt-2 flex gap-3">
                       <span className="text-lg">

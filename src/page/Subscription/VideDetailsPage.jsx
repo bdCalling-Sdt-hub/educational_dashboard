@@ -36,6 +36,7 @@ const VideoDetailsPage = () => {
     `${imageUrl.replace(/\/$/, "")}/${path.replace(/\\/g, "/")}`;
 
   const videoUrl = `${imageUrl}${video}`; 
+  console.log(videoUrl)
   const thumbnailUrl = constructUrl(thumbnail_image); 
 
   return (

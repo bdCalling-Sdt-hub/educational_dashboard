@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Modal, Form, Input, Upload, Button, message, Progress } from "antd";
+import { Modal, Form, Input, Upload, Button, message, Progress, Select } from "antd";
 import { imageUrl } from "../../redux/Api/baseApi";
 import toast from "react-hot-toast";
 import { useUpdateVideosMutation } from "../../redux/Api/videoApi";
@@ -21,6 +21,7 @@ const UpdateVideoModal = ({ isModalOpen, setEditModal, video }) => {
       const {
         title,
         description,
+        language,
         category,
         thumbnail_image,
         video: videoPath,
@@ -29,6 +30,7 @@ const UpdateVideoModal = ({ isModalOpen, setEditModal, video }) => {
       // Set default form values
       form.setFieldsValue({
         title,
+        language,
         description,
         category: category?._id, // Set the ObjectId in the hidden input
       });
@@ -57,7 +59,7 @@ const UpdateVideoModal = ({ isModalOpen, setEditModal, video }) => {
       }
     }
   }, [video, form]);
-  
+
 
   const onImageChange = ({ fileList }) => {
     setFileListImage(fileList);
@@ -92,17 +94,18 @@ const UpdateVideoModal = ({ isModalOpen, setEditModal, video }) => {
     const formData = new FormData();
     formData.append("title", values.title);
     formData.append("description", values.description);
+    formData.append("language", values.language);
     formData.append("category", values.category);
-     // This should now be the ObjectId
-  
+    // This should now be the ObjectId
+
     if (fileListImage[0]?.originFileObj) {
       formData.append("thumbnail_image", fileListImage[0].originFileObj);
     }
-  
+
     if (videoUrl) {
       formData.append("video", videoUrl); // Only append the relative video path
     }
-  
+
     setLoading(true);
     try {
       await updateVideo({ id: video._id, formData }).unwrap();
@@ -127,6 +130,25 @@ const UpdateVideoModal = ({ isModalOpen, setEditModal, video }) => {
       <div className="mb-20 mt-4">
         <h2 className="text-center font-bold mb-11">Update Video</h2>
         <Form form={form} layout="vertical" onFinish={handleSubmit}>
+          <div className="grid grid-cols-2 gap-3">
+            <Form.Item
+              name="language"
+              label="Select Language"
+              rules={[{ required: true, message: "Please select a language!" }]}
+            >
+              <Select
+                defaultValue="ENGLISH"
+                options={[
+                  { value: 'ENGLISH', label: 'English' },
+                  { value: 'SPANISH', label: 'Spanish' },
+                ]}
+              />
+
+            </Form.Item>
+            <Form.Item label="Category">
+              <Input value={video?.category?.name} disabled />
+            </Form.Item>
+          </div>
           <Form.Item
             label="Title"
             name="title"
@@ -145,13 +167,11 @@ const UpdateVideoModal = ({ isModalOpen, setEditModal, video }) => {
             <Input.TextArea rows={3} placeholder="Enter description" />
           </Form.Item>
 
-          <Form.Item label="Category">
-  <Input value={video?.category?.name} disabled />
-</Form.Item>
 
-<Form.Item name="category" hidden>
-  <Input value={video?.category?._id} />
-</Form.Item>
+
+          <Form.Item name="category" hidden>
+            <Input value={video?.category?._id} />
+          </Form.Item>
           <div className="grid grid-cols-2 gap-4">
             {/* Thumbnail Image */}
             <Form.Item label="Thumbnail Image">

@@ -98,6 +98,7 @@ return (
             </Link>
             <div className="p-4 bg-[#2F799E] text-white -mt-1">
               <Link to={`/dashboard/videos/videodetails/${video._id}`}>
+               <h2 className="text-sm text-gray-300">{video.language}</h2>
                 <h2 className="text-lg font-bold truncate">{video.title}</h2>
                 <p className="text-sm text-gray-200 truncate">
                   {video.description}

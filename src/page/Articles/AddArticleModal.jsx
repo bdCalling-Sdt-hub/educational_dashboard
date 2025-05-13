@@ -24,6 +24,7 @@ const AddArticleModal = ({ setOpenAddModal, openAddModal }) => {
     }
 
     const formData = new FormData();
+    formData.append("language", values.language);
     formData.append("category", values.categoryId);
     formData.append("title", values.title);
     formData.append("summery", values.summery);
@@ -109,12 +110,20 @@ const AddArticleModal = ({ setOpenAddModal, openAddModal }) => {
           initialValues={{ title: "", categoryId: null }}
         >
           <div className="grid grid-cols-2 gap-4">
+
             <Form.Item
-              name="title"
-              label="Title"
-              rules={[{ required: true, message: "Please enter the title!" }]}
+              name="language"
+              label="Select Language"
+              rules={[{ required: true, message: "Please select a language!" }]}
             >
-              <Input placeholder="Enter Title" className="bg-[#00000000]" />
+              <Select
+                defaultValue="ENGLISH"
+                options={[
+                  { value: 'ENGLISH', label: 'English' },
+                  { value: 'SPANISH', label: 'Spanish' },
+                ]}
+              />
+
             </Form.Item>
             <Form.Item
               name="categoryId"
@@ -132,6 +141,13 @@ const AddArticleModal = ({ setOpenAddModal, openAddModal }) => {
             </Form.Item>
           </div>
           <Form.Item
+            name="title"
+            label="Title"
+            rules={[{ required: true, message: "Please enter the title!" }]}
+          >
+            <Input placeholder="Enter Title" className="bg-[#00000000]" />
+          </Form.Item>
+          <Form.Item
             name="summery"
             label="Summary"
             rules={[{ required: true, message: "Please enter the summary!" }]}
@@ -144,7 +160,7 @@ const AddArticleModal = ({ setOpenAddModal, openAddModal }) => {
           </Form.Item>
 
           <div>
-            <p className="font-semibold mb-2">Description</p>
+
             <div className="w-full">
               <p className="font-semibold mb-2">Description</p>
               <JoditEditor

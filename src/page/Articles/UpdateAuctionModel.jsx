@@ -60,6 +60,7 @@ const UpdateAuctionModal = ({ isModalOpen, setIsModalOpen, singleArticle }) => {
         title: singleArticle?.title,
         summery: singleArticle?.summery,
         description: singleArticle?.description,
+        language: singleArticle?.language,
         category: singleArticle?.category?.name, // Set the ObjectId
       });
 
@@ -120,6 +121,25 @@ const UpdateAuctionModal = ({ isModalOpen, setIsModalOpen, singleArticle }) => {
       <Form form={form} onFinish={onFinish} layout="vertical">
         <div className="flex justify-between items-center gap-2 mt-5">
           <Form.Item
+              name="language"
+              label="Select Language"
+              rules={[{ required: true, message: "Please select a language!" }]}
+            >
+              <Select
+                defaultValue="ENGLISH"
+                options={[
+                  { value: 'ENGLISH', label: 'English' },
+                  { value: 'SPANISH', label: 'Spanish' },
+                ]}
+              />
+
+            </Form.Item>
+          <Form.Item label="Category" name="category">
+            <Input disabled />
+          </Form.Item>
+        </div>
+
+        <Form.Item
             label="Title"
             name="title"
             className="w-full"
@@ -127,10 +147,6 @@ const UpdateAuctionModal = ({ isModalOpen, setIsModalOpen, singleArticle }) => {
           >
             <Input />
           </Form.Item>
-          <Form.Item label="Category" name="category">
-            <Input disabled />
-          </Form.Item>
-        </div>
 
         <Form.Item
             label="summery"

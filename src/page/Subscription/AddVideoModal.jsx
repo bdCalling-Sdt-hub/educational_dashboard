@@ -65,6 +65,7 @@ const AddVideoModal = ({ openAddModal, setOpenAddModal }) => {
     const formData = new FormData();
     formData.append("title", values.title);
     formData.append("description", values.description);
+    formData.append("language", values.language);
     formData.append("category", values.categoryId);
     formData.append("thumbnail_image", fileListImage[0].originFileObj);
     formData.append("video", videoUrl);
@@ -96,7 +97,22 @@ const AddVideoModal = ({ openAddModal, setOpenAddModal }) => {
       <div className="mb-20 mt-4">
         <h2 className="text-center font-bold mb-11">+ Add Video</h2>
         <Form layout="vertical" onFinish={onFinish}>
-          <Form.Item
+          <div className="grid grid-cols-2 gap-3">
+             <Form.Item
+              name="language"
+              label="Select Language"
+              rules={[{ required: true, message: "Please select a language!" }]}
+            >
+              <Select
+                defaultValue="ENGLISH"
+                options={[
+                  { value: 'ENGLISH', label: 'English' },
+                  { value: 'SPANISH', label: 'Spanish' },
+                ]}
+              />
+
+            </Form.Item>
+            <Form.Item
             name="categoryId"
             label="Category Name"
             rules={[{ required: true, message: "Please select a category!" }]}
@@ -110,6 +126,7 @@ const AddVideoModal = ({ openAddModal, setOpenAddModal }) => {
               }))}
             />
           </Form.Item>
+          </div>
 
           <Form.Item
             label="Title"
