@@ -37,7 +37,7 @@ const Login = () => {
         }
       } catch (error) {
         console.error("Login Error:", error);
-        toast.error("Failed to log in. Please check your credentials.");
+        toast.error(error?.data?.message                  );
       } finally {
         setLoading(false); // Stop loading state
       }
